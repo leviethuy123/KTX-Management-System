@@ -24,6 +24,7 @@ class Room
         bool isEmpty() const;
         double getWaterUssage() const;
         double getElectricityUssage() const;
+        string getRoomNumber() const;
         bool isStudentInRoom(const string studentNum) const;
 };
 #endif

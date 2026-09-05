@@ -48,3 +48,7 @@ bool Room::isStudentInRoom(const string studentNum) const{
     }
     return false;
 }
+string Room::getRoomNumber() const
+{
+    return roomNumber;
+}
