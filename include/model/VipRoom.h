@@ -3,28 +3,37 @@
 
 #include "model/Room.h"
 
+/**
+ * @brief Lớp VipRoom (Khớp 100% với sơ đồ XML).
+ */
 class VipRoom : public Room {
 private:
-    double basePrice;        
-    double serviceFee;      
-    bool hasAirConditioner;  
+    bool showerHeater;    // Khớp XML: - showerHeater: bool = True
+    bool internet;        // Khớp XML: - internet: bool = True
+    bool airConditioner;  // Khớp XML: - airConditioner: bool = True
+    double basePrice;
+    double serviceFee;
 
 public:
     VipRoom();
-    VipRoom(const std::string& id, const std::string& bld, int fl,
-            double price = 1000000.0, double sFee = 200000.0, bool airCon = true,
-            RoomStatus st = RoomStatus::EMPTY, int occ = 0);
+    // Constructor khớp XML: VipRoom(const string& roomId, const int& floor, const string& building)
+    VipRoom(const std::string& rId, int fl, const std::string& bld,
+            double price = 1200000.0, double sFee = 250000.0, RoomStatus st = RoomStatus::EMPTY);
+    virtual ~VipRoom() = default;
 
-    double getBasePrice() const override;
-    double getServiceFee() const;
-    bool getHasAirConditioner() const;
-
+    // Getters & Setters
+    bool hasShowerHeater() const;
+    bool hasInternet() const;
+    bool hasAirConditioner() const;
+    void setShowerHeater(bool sh);
+    void setInternet(bool net);
+    void setAirConditioner(bool ac);
     void setBasePrice(double price);
     void setServiceFee(double sFee);
-    void setHasAirConditioner(bool airCon);
 
-    int getMaxStudents() const override;
-    RoomType getRoomType() const override;
+    // Ghi đè phương thức từ Room
+    std::string getRoomType() const override;
+    double getBasePrice() const override;
     double calculateTotalFee(double electricUsage = 0, double waterUsage = 0) const override;
     std::string getAmenities() const override;
 
@@ -32,4 +41,4 @@ public:
     static VipRoom deserialize(const std::string& line);
 };
 
-#endif 
+#endif // VIP_ROOM_H

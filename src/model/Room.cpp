@@ -1,58 +1,70 @@
 #include "model/Room.h"
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 Room::Room()
-    : roomId(""), building(""), floor(1), status(RoomStatus::EMPTY), currentOccupants(0) {}
+    : roomId(""), maxStudents(0), status(RoomStatus::EMPTY),
+      floor(1), building(""), chair(true), desk(true), fan(true) {}
 
-Room::Room(const std::string& id, const std::string& bld, int fl,
-           RoomStatus st, int occ)
-    : roomId(id), building(bld), floor(fl), status(st), currentOccupants(occ) {}
+Room::Room(const std::string& id, int maxStd, int fl, const std::string& bld, RoomStatus st)
+    : roomId(id), maxStudents(maxStd), status(st),
+      floor(fl), building(bld), chair(true), desk(true), fan(true) {}
+
+Room::~Room() {
+    activeRent.clear();
+}
 
 std::string Room::getRoomId() const { return roomId; }
-std::string Room::getBuilding() const { return building; }
-int Room::getFloor() const { return floor; }
+int Room::getMaxStudents() const { return maxStudents; }
 RoomStatus Room::getStatus() const { return status; }
-int Room::getCurrentOccupants() const { return currentOccupants; }
+int Room::getFloor() const { return floor; }
+std::string Room::getBuilding() const { return building; }
+bool Room::hasChair() const { return chair; }
+bool Room::hasDesk() const { return desk; }
+bool Room::hasFan() const { return fan; }
+const std::vector<Rent*>& Room::getActiveRent() const { return activeRent; }
 
 void Room::setRoomId(const std::string& id) { roomId = id; }
-void Room::setBuilding(const std::string& bld) { building = bld; }
-void Room::setFloor(int fl) { floor = fl; }
+void Room::setMaxStudents(int maxStd) { maxStudents = maxStd; }
 void Room::setStatus(RoomStatus st) { status = st; }
-void Room::setCurrentOccupants(int occ) { currentOccupants = occ; }
+void Room::setFloor(int fl) { floor = fl; }
+void Room::setBuilding(const std::string& bld) { building = bld; }
+void Room::setChair(bool c) { chair = c; }
+void Room::setDesk(bool d) { desk = d; }
+void Room::setFan(bool f) { fan = f; }
 
-bool Room::isFull() const {
-    return currentOccupants >= getMaxStudents();
+void Room::addRent(Rent* rent) {
+    if (rent != nullptr) {
+        activeRent.push_back(rent);
+        if (isFull()) {
+            status = RoomStatus::FULL;
+        } else {
+            status = RoomStatus::OCCUPIED;
+        }
+    }
+}
+
+bool Room::removeRent(Rent* rent) {
+    auto it = std::find(activeRent.begin(), activeRent.end(), rent);
+    if (it != activeRent.end()) {
+        activeRent.erase(it);
+        if (activeRent.empty()) {
+            status = RoomStatus::EMPTY;
+        } else {
+            status = RoomStatus::OCCUPIED;
+        }
+        return true;
+    }
+    return false;
 }
 
 bool Room::isEmpty() const {
-    return currentOccupants == 0;
+    return activeRent.empty();
 }
 
-bool Room::addOccupant() {
-    if (isFull() || status == RoomStatus::MAINTENANCE) {
-        return false;
-    }
-    currentOccupants++;
-    if (isFull()) {
-        status = RoomStatus::FULL;
-    } else {
-        status = RoomStatus::OCCUPIED;
-    }
-    return true;
-}
-
-bool Room::removeOccupant() {
-    if (isEmpty()) {
-        return false;
-    }
-    currentOccupants--;
-    if (isEmpty()) {
-        status = RoomStatus::EMPTY;
-    } else {
-        status = RoomStatus::OCCUPIED;
-    }
-    return true;
+bool Room::isFull() const {
+    return static_cast<int>(activeRent.size()) >= maxStudents;
 }
 
 std::string Room::getId() const {
@@ -63,8 +75,8 @@ void Room::print() const {
     std::cout << "[PHÒNG " << std::left << std::setw(6) << roomId << "] "
               << "Tòa: " << std::setw(8) << building
               << " | Tầng: " << floor
-              << " | Loại: " << std::setw(9) << EnumHelper::roomTypeToString(getRoomType())
-              << " | Đang ở: " << currentOccupants << "/" << getMaxStudents()
+              << " | Loại: " << std::setw(9) << getRoomType()
+              << " | Đang ở: " << activeRent.size() << "/" << maxStudents
               << " | Trạng thái: " << std::setw(10) << EnumHelper::roomStatusToString(status)
               << " | Tiện ích: " << getAmenities() << std::endl;
 }

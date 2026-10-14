@@ -1,81 +1,95 @@
 #include "model/Rent.h"
+#include "model/Student.h"
+#include "model/Room.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <vector>
 
 Rent::Rent()
-    : rentId(""), studentId(""), roomId(""),
-      startDate(Date()), endDate(Date()),
-      durationMonths(0), monthlyFee(0.0), status(RentStatus::ACTIVE) {}
+    : rentId(""), tenant(nullptr), room(nullptr),
+      rentalPeriod(Period::ONE_MONTH), startDate(Date()),
+      actualEndDate(Date()), rentFee(0.0), status(RentStatus::ACTIVE) {}
 
-Rent::Rent(const std::string& rId, const std::string& sId, const std::string& rmId,
-           const Date& sDate, int months, double fee, RentStatus st)
-    : rentId(rId), studentId(sId), roomId(rmId),
-      startDate(sDate), endDate(sDate.addMonths(months)),
-      durationMonths(months), monthlyFee(fee), status(st) {}
+Rent::Rent(const std::string& id, Student* student, Room* rm,
+           Period pe, const Date& start, double fee, RentStatus st)
+    : rentId(id), tenant(student), room(rm),
+      rentalPeriod(pe), startDate(start),
+      actualEndDate(start.addMonths(EnumHelper::periodToMonths(pe))),
+      rentFee(fee), status(st) {}
 
-std::string Rent::getRentId() const { return rentId; }
-std::string Rent::getStudentId() const { return studentId; }
-std::string Rent::getRoomId() const { return roomId; }
-Date Rent::getStartDate() const { return startDate; }
-Date Rent::getEndDate() const { return endDate; }
-int Rent::getDurationMonths() const { return durationMonths; }
-double Rent::getMonthlyFee() const { return monthlyFee; }
+Rent::~Rent() {
+    tenant = nullptr;
+    room = nullptr;
+}
+
+std::string Rent::getId() const { return rentId; }
 RentStatus Rent::getStatus() const { return status; }
-
-void Rent::setRentId(const std::string& rId) { rentId = rId; }
-void Rent::setStudentId(const std::string& sId) { studentId = sId; }
-void Rent::setRoomId(const std::string& rmId) { roomId = rmId; }
-void Rent::setStartDate(const Date& sDate) { startDate = sDate; }
-void Rent::setEndDate(const Date& eDate) { endDate = eDate; }
-void Rent::setDurationMonths(int months) { durationMonths = months; }
-void Rent::setMonthlyFee(double fee) { monthlyFee = fee; }
 void Rent::setStatus(RentStatus st) { status = st; }
+Student* Rent::getTenant() const { return tenant; }
+Room* Rent::getRoom() const { return room; }
+void Rent::setRoom(Room* rm) { room = rm; }
+Period Rent::getRentalPeriod() const { return rentalPeriod; }
+Date Rent::getStartDate() const { return startDate; }
+Date Rent::getActualEndDate() const { return actualEndDate; }
+double Rent::getRentFee() const { return rentFee; }
+
+void Rent::setRentId(const std::string& id) { rentId = id; }
+void Rent::setTenant(Student* s) { tenant = s; }
+void Rent::setRentalPeriod(Period pe) { rentalPeriod = pe; }
+void Rent::setStartDate(const Date& sDate) { startDate = sDate; }
+void Rent::setActualEndDate(const Date& aDate) { actualEndDate = aDate; }
+void Rent::setRentFee(double fee) { rentFee = fee; }
+
+Date Rent::getExpectedEndDate() const {
+    return startDate.addMonths(EnumHelper::periodToMonths(rentalPeriod));
+}
+
+void Rent::terminateEarly(Date endDate) {
+    actualEndDate = endDate;
+    status = RentStatus::TERMINATED;
+}
 
 bool Rent::isActive() const {
     return status == RentStatus::ACTIVE;
 }
 
 double Rent::calculateTotalAmount() const {
-    return durationMonths * monthlyFee;
-}
-
-void Rent::terminateEarly(const Date& actualEndDate) {
-    endDate = actualEndDate;
-    status = RentStatus::TERMINATED;
-}
-
-std::string Rent::getId() const {
-    return rentId;
+    return EnumHelper::periodToMonths(rentalPeriod) * rentFee;
 }
 
 void Rent::print() const {
+    std::string sId = (tenant != nullptr) ? tenant->getId() : "N/A";
+    std::string rId = (room != nullptr) ? room->getId() : "N/A";
+
     std::cout << "[HĐ " << std::left << std::setw(6) << rentId << "] "
-              << "Sinh viên: " << std::setw(8) << studentId
-              << " | Phòng: " << std::setw(6) << roomId
+              << "Sinh viên: " << std::setw(8) << sId
+              << " | Phòng: " << std::setw(6) << rId
+              << " | Thời hạn: " << std::setw(8) << EnumHelper::periodToString(rentalPeriod)
               << " | Từ: " << startDate.toString()
-              << " Đến: " << endDate.toString()
-              << " (" << durationMonths << " tháng)"
-              << " | Giá/tháng: " << static_cast<long long>(monthlyFee) << "đ"
+              << " Đến: " << actualEndDate.toString()
+              << " | Đơn giá: " << static_cast<long long>(rentFee) << "đ/tháng"
               << " | Trạng thái: " << EnumHelper::rentStatusToString(status)
               << std::endl;
 }
 
 std::string Rent::serialize() const {
+    std::string sId = (tenant != nullptr) ? tenant->getId() : "";
+    std::string rId = (room != nullptr) ? room->getId() : "";
+
     std::ostringstream oss;
     oss << rentId << "|"
-        << studentId << "|"
-        << roomId << "|"
+        << sId << "|"
+        << rId << "|"
+        << EnumHelper::periodToMonths(rentalPeriod) << "|"
         << startDate.toString() << "|"
-        << endDate.toString() << "|"
-        << durationMonths << "|"
-        << std::fixed << std::setprecision(0) << monthlyFee << "|"
+        << actualEndDate.toString() << "|"
+        << std::fixed << std::setprecision(0) << rentFee << "|"
         << EnumHelper::rentStatusToString(status);
     return oss.str();
 }
 
-Rent Rent::deserialize(const std::string& line) {
+Rent Rent::deserialize(const std::string& line, Student* s, Room* r) {
     std::vector<std::string> tokens;
     std::stringstream ss(line);
     std::string token;
@@ -87,16 +101,15 @@ Rent Rent::deserialize(const std::string& line) {
         return Rent();
     }
 
-    std::string rId = tokens[0];
-    std::string sId = tokens[1];
-    std::string rmId = tokens[2];
-    Date sDate = Date::fromString(tokens[3]);
-    Date eDate = Date::fromString(tokens[4]);
-    int months = std::stoi(tokens[5]);
+    std::string id = tokens[0];
+    // tokens[1] là studentId, tokens[2] là roomId
+    int months = std::stoi(tokens[3]);
+    Date sDate = Date::fromString(tokens[4]);
+    Date aDate = Date::fromString(tokens[5]);
     double fee = std::stod(tokens[6]);
     RentStatus st = EnumHelper::stringToRentStatus(tokens[7]);
 
-    Rent r(rId, sId, rmId, sDate, months, fee, st);
-    r.setEndDate(eDate);
-    return r;
+    Rent rentObj(id, s, r, EnumHelper::intToPeriod(months), sDate, fee, st);
+    rentObj.setActualEndDate(aDate);
+    return rentObj;
 }

@@ -7,8 +7,8 @@
 Staff::Staff()
     : Human(), employeeId(""), department(""), position("") {}
 
-Staff::Staff(const std::string& id, const std::string& name, Gender g,
-             const Date& birth, const std::string& p, const std::string& em,
+Staff::Staff(const std::string& id, const std::string& name, bool g,
+             const std::string& birth, const std::string& p, const std::string& em,
              const std::string& addr, const std::string& dept,
              const std::string& pos)
     : Human(name, g, birth, p, em, addr),
@@ -19,8 +19,8 @@ std::string Staff::getDepartment() const { return department; }
 std::string Staff::getPosition() const { return position; }
 
 void Staff::setEmployeeId(const std::string& id) { employeeId = id; }
-void Staff::setDepartment(const std::string& dept) { department = dept; }
-void Staff::setPosition(const std::string& pos) { position = pos; }
+void Staff::setDepartment(const std::string& newDepartment) { department = newDepartment; }
+void Staff::setPosition(const std::string& newPosition) { position = newPosition; }
 
 std::string Staff::getId() const {
     return employeeId;
@@ -29,9 +29,9 @@ std::string Staff::getId() const {
 void Staff::print() const {
     std::cout << "[CB] " << std::left << std::setw(8) << employeeId
               << " | " << std::setw(20) << fullName
-              << " | " << std::setw(6) << EnumHelper::genderToString(gender)
-              << " | Phòng ban: " << std::setw(15) << department
-              << " | Chức vụ: " << std::setw(12) << position
+              << " | " << std::setw(6) << (gender ? "Nam" : "Nu")
+              << " | Phòng ban: " << std::setw(18) << department
+              << " | Chức vụ: " << std::setw(15) << position
               << " | SĐT: " << phone << std::endl;
 }
 
@@ -39,8 +39,8 @@ std::string Staff::serialize() const {
     std::ostringstream oss;
     oss << employeeId << "|"
         << fullName << "|"
-        << EnumHelper::genderToString(gender) << "|"
-        << birthDate.toString() << "|"
+        << (gender ? "1" : "0") << "|"
+        << birthYear << "|"
         << phone << "|"
         << email << "|"
         << address << "|"
@@ -63,8 +63,8 @@ Staff Staff::deserialize(const std::string& line) {
 
     std::string id = tokens[0];
     std::string name = tokens[1];
-    Gender g = EnumHelper::stringToGender(tokens[2]);
-    Date birth = Date::fromString(tokens[3]);
+    bool g = (tokens[2] == "1" || tokens[2] == "Nam");
+    std::string birth = tokens[3];
     std::string phone = tokens[4];
     std::string email = tokens[5];
     std::string addr = tokens[6];

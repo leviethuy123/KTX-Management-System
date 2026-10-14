@@ -6,54 +6,60 @@
 #include "common/Enums.h"
 #include <string>
 
+class Student;
+class Room;
 
+/**
+ * @brief Lớp Hợp đồng thuê phòng Rent (Khớp 100% với sơ đồ XML).
+ */
 class Rent : public IEntity {
 private:
-    std::string rentId;      
-    std::string studentId;   
-    std::string roomId;     
-    Date startDate;         
-    Date endDate;            
-    int durationMonths;      
-    double monthlyFee;      
-    RentStatus status;      
+    std::string rentId;
+    Student* tenant;          // Khớp XML: - tenant: Student*
+    Room* room;               // Khớp XML: - room: Room*
+    Period rentalPeriod;      // Khớp XML: - rentalPeriod: Period
+    Date startDate;           // Khớp XML: - startDate: date
+    Date actualEndDate;       // Khớp XML: - actualEndDate: date
+    double rentFee;           // Khớp XML: - rentFee: double
+    RentStatus status;        // Khớp XML: - status: enum {ACTIVE, EXPIRED, TERMINATED}
 
 public:
     Rent();
-    Rent(const std::string& rId, const std::string& sId, const std::string& rmId,
-         const Date& sDate, int months, double fee,
+    // Constructor khớp XML: Rent(string id, Student* student, Room* room, Period pe, date start, double fee)
+    Rent(const std::string& id, Student* student, Room* rm,
+         Period pe, const Date& start, double fee,
          RentStatus st = RentStatus::ACTIVE);
+    virtual ~Rent();
 
-   
-    std::string getRentId() const;
-    std::string getStudentId() const;
-    std::string getRoomId() const;
-    Date getStartDate() const;
-    Date getEndDate() const;
-    int getDurationMonths() const;
-    double getMonthlyFee() const;
+    // Getters & Setters khớp XML
+    std::string getId() const override;
     RentStatus getStatus() const;
-
-    void setRentId(const std::string& rId);
-    void setStudentId(const std::string& sId);
-    void setRoomId(const std::string& rmId);
-    void setStartDate(const Date& sDate);
-    void setEndDate(const Date& eDate);
-    void setDurationMonths(int months);
-    void setMonthlyFee(double fee);
     void setStatus(RentStatus st);
+    Student* getTenant() const;
+    Room* getRoom() const;
+    void setRoom(Room* rm);
+    Period getRentalPeriod() const;
+    Date getStartDate() const;
+    Date getActualEndDate() const;
+    double getRentFee() const;
 
-    
+    void setRentId(const std::string& id);
+    void setTenant(Student* s);
+    void setRentalPeriod(Period pe);
+    void setStartDate(const Date& sDate);
+    void setActualEndDate(const Date& aDate);
+    void setRentFee(double fee);
+
+    // Nghiệp vụ khớp XML
+    Date getExpectedEndDate() const;
+    void terminateEarly(Date endDate);
     bool isActive() const;
     double calculateTotalAmount() const;
-    void terminateEarly(const Date& actualEndDate);
 
-   
-    std::string getId() const override;
+    // IEntity
     void print() const override;
     std::string serialize() const override;
-
-    static Rent deserialize(const std::string& line);
+    static Rent deserialize(const std::string& line, Student* s = nullptr, Room* r = nullptr);
 };
 
-#endif 
+#endif // RENT_H
