@@ -37,7 +37,7 @@ void VipRoom::setHasAirConditioner(bool airCon) {
 }
 
 int VipRoom::getMaxStudents() const {
-    return 4; // Phòng VIP: tối đa 4 người
+    return 4; 
 }
 
 RoomType VipRoom::getRoomType() const {
