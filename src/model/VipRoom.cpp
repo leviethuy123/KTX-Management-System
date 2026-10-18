@@ -40,37 +40,52 @@ std::string VipRoom::getAmenities() const {
     return "Điều hòa Inverter, Nóng lạnh, Wifi riêng, Bàn học riêng";
 }
 
-std::string VipRoom::serialize() const {
-    std::ostringstream oss;
-    oss << "VIP|"
-        << roomId << "|"
-        << building << "|"
-        << floor << "|"
-        << EnumHelper::roomStatusToString(status) << "|"
-        << maxStudents << "|"
-        << std::fixed << std::setprecision(0) << basePrice << "|"
-        << serviceFee;
-    return oss.str();
+nlohmann::json VipRoom::toJson() const {
+    nlohmann::json j;
+    j["roomId"] = roomId;
+    j["roomType"] = "VIP";
+    j["building"] = building;
+    j["floor"] = floor;
+    j["maxStudents"] = maxStudents;
+    j["status"] = EnumHelper::roomStatusToString(status);
+    j["basePrice"] = basePrice;
+    j["serviceFee"] = serviceFee;
+    j["chair"] = chair;
+    j["desk"] = desk;
+    j["fan"] = fan;
+    j["showerHeater"] = showerHeater;
+    j["internet"] = internet;
+    j["airConditioner"] = airConditioner;
+    return j;
 }
 
-VipRoom VipRoom::deserialize(const std::string& line) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(line);
-    std::string token;
-    while (std::getline(ss, token, '|')) {
-        tokens.push_back(token);
-    }
+std::string VipRoom::serialize() const {
+    return toJson().dump(2);
+}
 
-    if (tokens.size() < 8) {
+VipRoom VipRoom::fromJson(const nlohmann::json& j) {
+    std::string id = j.value("roomId", "");
+    std::string bld = j.value("building", "");
+    int fl = j.value("floor", 1);
+    RoomStatus st = EnumHelper::stringToRoomStatus(j.value("status", "EMPTY"));
+    double price = j.value("basePrice", 1200000.0);
+    double sFee = j.value("serviceFee", 250000.0);
+
+    VipRoom room(id, fl, bld, price, sFee, st);
+    room.setChair(j.value("chair", true));
+    room.setDesk(j.value("desk", true));
+    room.setFan(j.value("fan", true));
+    room.setShowerHeater(j.value("showerHeater", true));
+    room.setInternet(j.value("internet", true));
+    room.setAirConditioner(j.value("airConditioner", true));
+    return room;
+}
+
+VipRoom VipRoom::deserialize(const std::string& jsonStr) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(jsonStr);
+        return fromJson(j);
+    } catch (...) {
         return VipRoom();
     }
-
-    std::string id = tokens[1];
-    std::string bld = tokens[2];
-    int fl = std::stoi(tokens[3]);
-    RoomStatus st = EnumHelper::stringToRoomStatus(tokens[4]);
-    double price = std::stod(tokens[6]);
-    double sFee = std::stod(tokens[7]);
-
-    return VipRoom(id, fl, bld, price, sFee, st);
 }

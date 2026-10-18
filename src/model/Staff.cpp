@@ -1,8 +1,6 @@
 #include "model/Staff.h"
 #include <iostream>
 #include <iomanip>
-#include <sstream>
-#include <vector>
 
 Staff::Staff()
     : Human(), employeeId(""), department(""), position("") {}
@@ -35,41 +33,43 @@ void Staff::print() const {
               << " | SĐT: " << phone << std::endl;
 }
 
-std::string Staff::serialize() const {
-    std::ostringstream oss;
-    oss << employeeId << "|"
-        << fullName << "|"
-        << (gender ? "1" : "0") << "|"
-        << birthYear << "|"
-        << phone << "|"
-        << email << "|"
-        << address << "|"
-        << department << "|"
-        << position;
-    return oss.str();
+nlohmann::json Staff::toJson() const {
+    nlohmann::json j;
+    j["employeeId"] = employeeId;
+    j["fullName"] = fullName;
+    j["gender"] = gender;
+    j["birthYear"] = birthYear;
+    j["phone"] = phone;
+    j["email"] = email;
+    j["address"] = address;
+    j["department"] = department;
+    j["position"] = position;
+    return j;
 }
 
-Staff Staff::deserialize(const std::string& line) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(line);
-    std::string token;
-    while (std::getline(ss, token, '|')) {
-        tokens.push_back(token);
-    }
+std::string Staff::serialize() const {
+    return toJson().dump(2);
+}
 
-    if (tokens.size() < 9) {
-        return Staff();
-    }
-
-    std::string id = tokens[0];
-    std::string name = tokens[1];
-    bool g = (tokens[2] == "1" || tokens[2] == "Nam");
-    std::string birth = tokens[3];
-    std::string phone = tokens[4];
-    std::string email = tokens[5];
-    std::string addr = tokens[6];
-    std::string dept = tokens[7];
-    std::string pos = tokens[8];
+Staff Staff::fromJson(const nlohmann::json& j) {
+    std::string id = j.value("employeeId", "");
+    std::string name = j.value("fullName", "");
+    bool g = j.value("gender", true);
+    std::string birth = j.value("birthYear", "");
+    std::string phone = j.value("phone", "");
+    std::string email = j.value("email", "");
+    std::string addr = j.value("address", "");
+    std::string dept = j.value("department", "");
+    std::string pos = j.value("position", "");
 
     return Staff(id, name, g, birth, phone, email, addr, dept, pos);
+}
+
+Staff Staff::deserialize(const std::string& jsonStr) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(jsonStr);
+        return fromJson(j);
+    } catch (...) {
+        return Staff();
+    }
 }

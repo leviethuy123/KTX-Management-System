@@ -5,23 +5,24 @@
 #include "common/Enums.h"
 #include <string>
 #include <vector>
+#include <nlohmann/json.hpp>
 
 class Rent; // Forward declaration
 
 /**
- * @brief Lớp cơ sở trừu tượng Room (Khớp 100% với sơ đồ XML).
+ * @brief Lớp cơ sở trừu tượng Room (Khớp sơ đồ XML, hỗ trợ lưu trữ JSON).
  */
 class Room : public IEntity {
 protected:
     std::string roomId;
     int maxStudents;
-    std::vector<Rent*> activeRent; // Khớp XML: - activeRent: vector<Rent*>
+    std::vector<Rent*> activeRent;
     RoomStatus status;
     int floor;
     std::string building;
-    bool chair;                    // Khớp XML: - chair: bool = True
-    bool desk;                     // Khớp XML: - desk: bool = True
-    bool fan;                      // Khớp XML: - fan: bool = True
+    bool chair;
+    bool desk;
+    bool fan;
 
 public:
     Room();
@@ -49,7 +50,7 @@ public:
     void setDesk(bool d);
     void setFan(bool f);
 
-    // Nghiệp vụ theo đúng sơ đồ XML
+    // Nghiệp vụ
     void addRent(Rent* rent);
     bool removeRent(Rent* rent);
     bool isEmpty() const;
@@ -61,9 +62,13 @@ public:
     virtual double calculateTotalFee(double electricUsage = 0, double waterUsage = 0) const = 0;
     virtual std::string getAmenities() const = 0;
 
-    // IEntity
+    // IEntity & JSON
     std::string getId() const override;
     void print() const override;
+    virtual nlohmann::json toJson() const override = 0;
+    std::string serialize() const override {
+        return toJson().dump(2);
+    }
 };
 
 #endif // ROOM_H

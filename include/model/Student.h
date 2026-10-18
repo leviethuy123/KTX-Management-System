@@ -3,11 +3,12 @@
 
 #include "model/Human.h"
 #include <string>
+#include <nlohmann/json.hpp>
 
 class Rent; // Forward declaration
 
 /**
- * @brief Lớp Sinh viên (Khớp 100% với sơ đồ XML).
+ * @brief Lớp Sinh viên (Khớp sơ đồ XML, hỗ trợ lưu trữ JSON).
  */
 class Student : public Human {
 private:
@@ -15,7 +16,7 @@ private:
     std::string className;
     std::string faculty;
     std::string cohort;
-    Rent* rentInfo; // Khớp XML: - rentInfo: Rent*
+    Rent* rentInfo;
 
 public:
     Student();
@@ -25,24 +26,27 @@ public:
             const std::string& fac, const std::string& coh, Rent* r = nullptr);
     virtual ~Student();
 
-    // Getters & Setters theo đúng sơ đồ XML
+    // Getters & Setters
     std::string getStudentId() const;
-    std::string getClass() const;     // Khớp XML: + getClass()
-    std::string getFaculty() const;   // Khớp XML: + getFaculty()
-    std::string getCohort() const;    // Khớp XML: + getCohort()
-    Rent* getRent() const;            // Khớp XML: + getRent(): Rent*
-    void setRent(Rent* rent);         // Khớp XML: + setRent(Rent* rent): void
+    std::string getClass() const;
+    std::string getFaculty() const;
+    std::string getCohort() const;
+    Rent* getRent() const;
+    void setRent(Rent* rent);
 
     void setStudentId(const std::string& id);
     void setClass(const std::string& cName);
     void setFaculty(const std::string& fac);
     void setCohort(const std::string& coh);
 
-    // IEntity
+    // IEntity & JSON
     std::string getId() const override;
     void print() const override;
+    nlohmann::json toJson() const override;
     std::string serialize() const override;
-    static Student deserialize(const std::string& line);
+
+    static Student fromJson(const nlohmann::json& j);
+    static Student deserialize(const std::string& jsonStr);
 };
 
 #endif // STUDENT_H

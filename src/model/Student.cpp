@@ -1,8 +1,6 @@
 #include "model/Student.h"
 #include <iostream>
 #include <iomanip>
-#include <sstream>
-#include <vector>
 
 Student::Student()
     : Human(), studentId(""), className(""), faculty(""), cohort(""), rentInfo(nullptr) {}
@@ -15,7 +13,6 @@ Student::Student(const std::string& id, const std::string& name, bool g,
       studentId(id), className(cName), faculty(fac), cohort(coh), rentInfo(r) {}
 
 Student::~Student() {
-    // Không delete rentInfo vì Rent được quản lý bởi RentManager
     rentInfo = nullptr;
 }
 
@@ -46,43 +43,45 @@ void Student::print() const {
               << " | SĐT: " << phone << std::endl;
 }
 
-std::string Student::serialize() const {
-    std::ostringstream oss;
-    oss << studentId << "|"
-        << fullName << "|"
-        << (gender ? "1" : "0") << "|"
-        << birthYear << "|"
-        << phone << "|"
-        << email << "|"
-        << address << "|"
-        << className << "|"
-        << faculty << "|"
-        << cohort;
-    return oss.str();
+nlohmann::json Student::toJson() const {
+    nlohmann::json j;
+    j["studentId"] = studentId;
+    j["fullName"] = fullName;
+    j["gender"] = gender;
+    j["birthYear"] = birthYear;
+    j["phone"] = phone;
+    j["email"] = email;
+    j["address"] = address;
+    j["className"] = className;
+    j["faculty"] = faculty;
+    j["cohort"] = cohort;
+    return j;
 }
 
-Student Student::deserialize(const std::string& line) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(line);
-    std::string token;
-    while (std::getline(ss, token, '|')) {
-        tokens.push_back(token);
-    }
+std::string Student::serialize() const {
+    return toJson().dump(2);
+}
 
-    if (tokens.size() < 10) {
-        return Student();
-    }
-
-    std::string id = tokens[0];
-    std::string name = tokens[1];
-    bool g = (tokens[2] == "1" || tokens[2] == "Nam");
-    std::string birth = tokens[3];
-    std::string phone = tokens[4];
-    std::string email = tokens[5];
-    std::string addr = tokens[6];
-    std::string cName = tokens[7];
-    std::string fac = tokens[8];
-    std::string coh = tokens[9];
+Student Student::fromJson(const nlohmann::json& j) {
+    std::string id = j.value("studentId", "");
+    std::string name = j.value("fullName", "");
+    bool g = j.value("gender", true);
+    std::string birth = j.value("birthYear", "");
+    std::string phone = j.value("phone", "");
+    std::string email = j.value("email", "");
+    std::string addr = j.value("address", "");
+    std::string cName = j.value("className", "");
+    std::string fac = j.value("faculty", "");
+    std::string coh = j.value("cohort", "");
 
     return Student(id, name, g, birth, phone, email, addr, cName, fac, coh);
+}
+
+Student Student::deserialize(const std::string& jsonStr) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(jsonStr);
+        return fromJson(j);
+    } catch (...) {
+        return Student();
+    }
 }

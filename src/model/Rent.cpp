@@ -3,8 +3,6 @@
 #include "model/Room.h"
 #include <iostream>
 #include <iomanip>
-#include <sstream>
-#include <vector>
 
 Rent::Rent()
     : rentId(""), tenant(nullptr), room(nullptr),
@@ -73,43 +71,41 @@ void Rent::print() const {
               << std::endl;
 }
 
-std::string Rent::serialize() const {
-    std::string sId = (tenant != nullptr) ? tenant->getId() : "";
-    std::string rId = (room != nullptr) ? room->getId() : "";
-
-    std::ostringstream oss;
-    oss << rentId << "|"
-        << sId << "|"
-        << rId << "|"
-        << EnumHelper::periodToMonths(rentalPeriod) << "|"
-        << startDate.toString() << "|"
-        << actualEndDate.toString() << "|"
-        << std::fixed << std::setprecision(0) << rentFee << "|"
-        << EnumHelper::rentStatusToString(status);
-    return oss.str();
+nlohmann::json Rent::toJson() const {
+    nlohmann::json j;
+    j["rentId"] = rentId;
+    j["studentId"] = (tenant != nullptr) ? tenant->getId() : "";
+    j["roomId"] = (room != nullptr) ? room->getId() : "";
+    j["rentalPeriod"] = EnumHelper::periodToMonths(rentalPeriod);
+    j["startDate"] = startDate.toString();
+    j["actualEndDate"] = actualEndDate.toString();
+    j["rentFee"] = rentFee;
+    j["status"] = EnumHelper::rentStatusToString(status);
+    return j;
 }
 
-Rent Rent::deserialize(const std::string& line, Student* s, Room* r) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(line);
-    std::string token;
-    while (std::getline(ss, token, '|')) {
-        tokens.push_back(token);
-    }
+std::string Rent::serialize() const {
+    return toJson().dump(2);
+}
 
-    if (tokens.size() < 8) {
-        return Rent();
-    }
-
-    std::string id = tokens[0];
-    // tokens[1] là studentId, tokens[2] là roomId
-    int months = std::stoi(tokens[3]);
-    Date sDate = Date::fromString(tokens[4]);
-    Date aDate = Date::fromString(tokens[5]);
-    double fee = std::stod(tokens[6]);
-    RentStatus st = EnumHelper::stringToRentStatus(tokens[7]);
+Rent Rent::fromJson(const nlohmann::json& j, Student* s, Room* r) {
+    std::string id = j.value("rentId", "");
+    int months = j.value("rentalPeriod", 1);
+    Date sDate = Date::fromString(j.value("startDate", "01/01/2026"));
+    Date aDate = Date::fromString(j.value("actualEndDate", "01/01/2026"));
+    double fee = j.value("rentFee", 0.0);
+    RentStatus st = EnumHelper::stringToRentStatus(j.value("status", "ACTIVE"));
 
     Rent rentObj(id, s, r, EnumHelper::intToPeriod(months), sDate, fee, st);
     rentObj.setActualEndDate(aDate);
     return rentObj;
+}
+
+Rent Rent::deserialize(const std::string& jsonStr, Student* s, Room* r) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(jsonStr);
+        return fromJson(j, s, r);
+    } catch (...) {
+        return Rent();
+    }
 }

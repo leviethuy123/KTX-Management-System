@@ -37,35 +37,50 @@ std::string StandardRoom::getAmenities() const {
     return "Bàn học, Ghế, Quạt trần (Tiêu chuẩn)";
 }
 
-std::string StandardRoom::serialize() const {
-    std::ostringstream oss;
-    oss << "STANDARD|"
-        << roomId << "|"
-        << building << "|"
-        << floor << "|"
-        << EnumHelper::roomStatusToString(status) << "|"
-        << maxStudents << "|"
-        << std::fixed << std::setprecision(0) << basePrice;
-    return oss.str();
+nlohmann::json StandardRoom::toJson() const {
+    nlohmann::json j;
+    j["roomId"] = roomId;
+    j["roomType"] = "STANDARD";
+    j["building"] = building;
+    j["floor"] = floor;
+    j["maxStudents"] = maxStudents;
+    j["status"] = EnumHelper::roomStatusToString(status);
+    j["basePrice"] = basePrice;
+    j["chair"] = chair;
+    j["desk"] = desk;
+    j["fan"] = fan;
+    j["showerHeater"] = showerHeater;
+    j["internet"] = internet;
+    j["airConditioner"] = airConditioner;
+    return j;
 }
 
-StandardRoom StandardRoom::deserialize(const std::string& line) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(line);
-    std::string token;
-    while (std::getline(ss, token, '|')) {
-        tokens.push_back(token);
-    }
+std::string StandardRoom::serialize() const {
+    return toJson().dump(2);
+}
 
-    if (tokens.size() < 7) {
+StandardRoom StandardRoom::fromJson(const nlohmann::json& j) {
+    std::string id = j.value("roomId", "");
+    std::string bld = j.value("building", "");
+    int fl = j.value("floor", 1);
+    RoomStatus st = EnumHelper::stringToRoomStatus(j.value("status", "EMPTY"));
+    double price = j.value("basePrice", 400000.0);
+
+    StandardRoom room(id, fl, bld, price, st);
+    room.setChair(j.value("chair", true));
+    room.setDesk(j.value("desk", true));
+    room.setFan(j.value("fan", true));
+    room.setShowerHeater(j.value("showerHeater", false));
+    room.setInternet(j.value("internet", false));
+    room.setAirConditioner(j.value("airConditioner", false));
+    return room;
+}
+
+StandardRoom StandardRoom::deserialize(const std::string& jsonStr) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(jsonStr);
+        return fromJson(j);
+    } catch (...) {
         return StandardRoom();
     }
-
-    std::string id = tokens[1];
-    std::string bld = tokens[2];
-    int fl = std::stoi(tokens[3]);
-    RoomStatus st = EnumHelper::stringToRoomStatus(tokens[4]);
-    double price = std::stod(tokens[6]);
-
-    return StandardRoom(id, fl, bld, price, st);
 }

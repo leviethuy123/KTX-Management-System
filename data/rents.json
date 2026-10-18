@@ -1,0 +1,22 @@
+[
+  {
+    "rentId": "HD001",
+    "studentId": "SV101",
+    "roomId": "P101",
+    "rentalPeriod": 6,
+    "startDate": "01/09/2026",
+    "actualEndDate": "01/03/2027",
+    "rentFee": 400000.0,
+    "status": "ACTIVE"
+  },
+  {
+    "rentId": "HD002",
+    "studentId": "SV102",
+    "roomId": "P201",
+    "rentalPeriod": 12,
+    "startDate": "01/09/2026",
+    "actualEndDate": "01/09/2027",
+    "rentFee": 1200000.0,
+    "status": "ACTIVE"
+  }
+]

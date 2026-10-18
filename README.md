@@ -179,26 +179,79 @@ KTX-Management-System/
 
 ---
 
-## 💾 5. Định dạng Lưu trữ Dữ liệu (Serialization)
+## 💾 5. Định dạng Lưu trữ Dữ liệu (JSON Storage)
 
-Hệ thống sử dụng cơ chế định dạng chuỗi phân cách bởi ký tự gạch đứng (`|`), đảm bảo dễ đọc, dễ chỉnh sửa và mở rộng:
+Hệ thống sử dụng thư viện chuẩn **`nlohmann/json`** để lưu trữ và quản lý dữ liệu trong thư mục `data/` dưới dạng các file `.json` thay cho file `.dat`, đảm bảo cấu trúc rõ ràng, tính tương thích cao và dễ dàng mở rộng:
 
-* **Sinh viên (`Student`):**
-  ```text
-  SV101|Nguyen Van An|Nam|15/03/2004|0901234567|an.nv@sv.dut.udn.vn|Da Nang|22T_DT1|Cong nghe Thong tin|K22
+* **Sinh viên (`data/students.json`):**
+  ```json
+  [
+    {
+      "studentId": "SV101",
+      "fullName": "Nguyen Van An",
+      "gender": true,
+      "birthYear": "2004",
+      "phone": "0901234567",
+      "email": "an.nv@sv.dut.udn.vn",
+      "address": "Da Nang",
+      "className": "22T_DT1",
+      "faculty": "CNTT",
+      "cohort": "K22"
+    }
+  ]
   ```
-* **Phòng Tiêu chuẩn (`StandardRoom`):**
-  ```text
-  STANDARD|P101|Khu A|1|Dang o|1|400000
+* **Phòng ở (`data/rooms.json`):**
+  ```json
+  [
+    {
+      "roomId": "P101",
+      "roomType": "STANDARD",
+      "building": "Khu A",
+      "floor": 1,
+      "maxStudents": 8,
+      "status": "EMPTY",
+      "basePrice": 400000.0,
+      "chair": true,
+      "desk": true,
+      "fan": true,
+      "showerHeater": false,
+      "internet": false,
+      "airConditioner": false
+    },
+    {
+      "roomId": "P201",
+      "roomType": "VIP",
+      "building": "Khu VIP",
+      "floor": 2,
+      "maxStudents": 4,
+      "status": "EMPTY",
+      "basePrice": 1200000.0,
+      "serviceFee": 250000.0,
+      "chair": true,
+      "desk": true,
+      "fan": true,
+      "showerHeater": true,
+      "internet": true,
+      "airConditioner": true
+    }
+  ]
   ```
-* **Phòng VIP (`VipRoom`):**
-  ```text
-  VIP|P201|Khu VIP|2|Dang o|1|1200000|250000|1
+* **Hợp đồng thuê (`data/rents.json`):**
+  ```json
+  [
+    {
+      "rentId": "HD001",
+      "studentId": "SV101",
+      "roomId": "P101",
+      "rentalPeriod": 6,
+      "startDate": "01/09/2026",
+      "actualEndDate": "01/03/2027",
+      "rentFee": 400000.0,
+      "status": "ACTIVE"
+    }
+  ]
   ```
-* **Hợp đồng thuê (`Rent`):**
-  ```text
-  HD001|SV101|P101|01/09/2026|01/07/2027|10|400000|Hieu luc
-  ```
+
 
 ---
 

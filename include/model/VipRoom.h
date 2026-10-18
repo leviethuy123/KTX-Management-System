@@ -2,21 +2,21 @@
 #define VIP_ROOM_H
 
 #include "model/Room.h"
+#include <nlohmann/json.hpp>
 
 /**
- * @brief Lớp VipRoom (Khớp 100% với sơ đồ XML).
+ * @brief Lớp VipRoom (Khớp sơ đồ XML, hỗ trợ lưu trữ JSON).
  */
 class VipRoom : public Room {
 private:
-    bool showerHeater;    // Khớp XML: - showerHeater: bool = True
-    bool internet;        // Khớp XML: - internet: bool = True
-    bool airConditioner;  // Khớp XML: - airConditioner: bool = True
+    bool showerHeater;
+    bool internet;
+    bool airConditioner;
     double basePrice;
     double serviceFee;
 
 public:
     VipRoom();
-    // Constructor khớp XML: VipRoom(const string& roomId, const int& floor, const string& building)
     VipRoom(const std::string& rId, int fl, const std::string& bld,
             double price = 1200000.0, double sFee = 250000.0, RoomStatus st = RoomStatus::EMPTY);
     virtual ~VipRoom() = default;
@@ -37,8 +37,11 @@ public:
     double calculateTotalFee(double electricUsage = 0, double waterUsage = 0) const override;
     std::string getAmenities() const override;
 
+    // JSON
+    nlohmann::json toJson() const override;
     std::string serialize() const override;
-    static VipRoom deserialize(const std::string& line);
+    static VipRoom fromJson(const nlohmann::json& j);
+    static VipRoom deserialize(const std::string& jsonStr);
 };
 
 #endif // VIP_ROOM_H

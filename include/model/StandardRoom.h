@@ -2,20 +2,20 @@
 #define STANDARD_ROOM_H
 
 #include "model/Room.h"
+#include <nlohmann/json.hpp>
 
 /**
- * @brief Lớp StandardRoom (Khớp 100% với sơ đồ XML).
+ * @brief Lớp StandardRoom (Khớp sơ đồ XML, hỗ trợ lưu trữ JSON).
  */
 class StandardRoom : public Room {
 private:
-    bool showerHeater;    // Khớp XML: - showerHeater: bool = False
-    bool internet;        // Khớp XML: - internet: bool = False
-    bool airConditioner;  // Khớp XML: - airConditioner: bool = False
+    bool showerHeater;
+    bool internet;
+    bool airConditioner;
     double basePrice;
 
 public:
     StandardRoom();
-    // Constructor khớp XML: StandardRoom(const string& roomId, const int& floor, const string& building)
     StandardRoom(const std::string& rId, int fl, const std::string& bld,
                  double price = 400000.0, RoomStatus st = RoomStatus::EMPTY);
     virtual ~StandardRoom() = default;
@@ -35,8 +35,11 @@ public:
     double calculateTotalFee(double electricUsage = 0, double waterUsage = 0) const override;
     std::string getAmenities() const override;
 
+    // JSON
+    nlohmann::json toJson() const override;
     std::string serialize() const override;
-    static StandardRoom deserialize(const std::string& line);
+    static StandardRoom fromJson(const nlohmann::json& j);
+    static StandardRoom deserialize(const std::string& jsonStr);
 };
 
 #endif // STANDARD_ROOM_H

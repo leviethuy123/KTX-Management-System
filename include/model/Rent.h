@@ -5,33 +5,33 @@
 #include "common/Date.h"
 #include "common/Enums.h"
 #include <string>
+#include <nlohmann/json.hpp>
 
 class Student;
 class Room;
 
 /**
- * @brief Lớp Hợp đồng thuê phòng Rent (Khớp 100% với sơ đồ XML).
+ * @brief Lớp Hợp đồng thuê phòng Rent (Hỗ trợ lưu trữ JSON).
  */
 class Rent : public IEntity {
 private:
     std::string rentId;
-    Student* tenant;          // Khớp XML: - tenant: Student*
-    Room* room;               // Khớp XML: - room: Room*
-    Period rentalPeriod;      // Khớp XML: - rentalPeriod: Period
-    Date startDate;           // Khớp XML: - startDate: date
-    Date actualEndDate;       // Khớp XML: - actualEndDate: date
-    double rentFee;           // Khớp XML: - rentFee: double
-    RentStatus status;        // Khớp XML: - status: enum {ACTIVE, EXPIRED, TERMINATED}
+    Student* tenant;
+    Room* room;
+    Period rentalPeriod;
+    Date startDate;
+    Date actualEndDate;
+    double rentFee;
+    RentStatus status;
 
 public:
     Rent();
-    // Constructor khớp XML: Rent(string id, Student* student, Room* room, Period pe, date start, double fee)
     Rent(const std::string& id, Student* student, Room* rm,
          Period pe, const Date& start, double fee,
          RentStatus st = RentStatus::ACTIVE);
     virtual ~Rent();
 
-    // Getters & Setters khớp XML
+    // Getters & Setters
     std::string getId() const override;
     RentStatus getStatus() const;
     void setStatus(RentStatus st);
@@ -50,16 +50,19 @@ public:
     void setActualEndDate(const Date& aDate);
     void setRentFee(double fee);
 
-    // Nghiệp vụ khớp XML
+    // Nghiệp vụ
     Date getExpectedEndDate() const;
     void terminateEarly(Date endDate);
     bool isActive() const;
     double calculateTotalAmount() const;
 
-    // IEntity
+    // IEntity & JSON
     void print() const override;
+    nlohmann::json toJson() const override;
     std::string serialize() const override;
-    static Rent deserialize(const std::string& line, Student* s = nullptr, Room* r = nullptr);
+
+    static Rent fromJson(const nlohmann::json& j, Student* s = nullptr, Room* r = nullptr);
+    static Rent deserialize(const std::string& jsonStr, Student* s = nullptr, Room* r = nullptr);
 };
 
 #endif // RENT_H

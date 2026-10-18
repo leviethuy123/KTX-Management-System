@@ -3,9 +3,10 @@
 
 #include "model/Human.h"
 #include <string>
+#include <nlohmann/json.hpp>
 
 /**
- * @brief Lớp Cán bộ KTX (Khớp sơ đồ XML).
+ * @brief Lớp Cán bộ KTX (Hỗ trợ lưu trữ JSON).
  */
 class Staff : public Human {
 private:
@@ -21,7 +22,7 @@ public:
           const std::string& pos);
     virtual ~Staff() = default;
 
-    // Getters & Setters khớp XML
+    // Getters & Setters
     std::string getEmployeeId() const;
     std::string getDepartment() const;
     void setDepartment(const std::string& newDepartment);
@@ -30,11 +31,14 @@ public:
 
     void setEmployeeId(const std::string& id);
 
-    // IEntity
+    // IEntity & JSON
     std::string getId() const override;
     void print() const override;
+    nlohmann::json toJson() const override;
     std::string serialize() const override;
-    static Staff deserialize(const std::string& line);
+
+    static Staff fromJson(const nlohmann::json& j);
+    static Staff deserialize(const std::string& jsonStr);
 };
 
 #endif // STAFF_H

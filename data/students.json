@@ -1,0 +1,50 @@
+[
+  {
+    "address": "Da Nang",
+    "birthYear": "2004",
+    "className": "22T_DT1",
+    "cohort": "K22",
+    "email": "an.nv@sv.dut.udn.vn",
+    "faculty": "CNTT",
+    "fullName": "Nguyen Van An",
+    "gender": true,
+    "phone": "0901234567",
+    "studentId": "SV101"
+  },
+  {
+    "address": "Quang Nam",
+    "birthYear": "2004",
+    "className": "22KT",
+    "cohort": "K22",
+    "email": "bich.tt@sv.dut.udn.vn",
+    "faculty": "Kien truc",
+    "fullName": "Tran Thi Bich",
+    "gender": false,
+    "phone": "0912345678",
+    "studentId": "SV102"
+  },
+  {
+    "address": "Hue",
+    "birthYear": "2003",
+    "className": "21D_DT2",
+    "cohort": "K21",
+    "email": "long.lh@sv.dut.udn.vn",
+    "faculty": "Dien - Dien tu",
+    "fullName": "Le Hoang Long",
+    "gender": true,
+    "phone": "0934567890",
+    "studentId": "SV103"
+  },
+  {
+    "address": "Quang Tri",
+    "birthYear": "2005",
+    "className": "23T_DT1",
+    "cohort": "K23",
+    "email": "huong.vt@sv.dut.udn.vn",
+    "faculty": "CNTT",
+    "fullName": "Vu Thi Huong",
+    "gender": false,
+    "phone": "0945678901",
+    "studentId": "SV104"
+  }
+]

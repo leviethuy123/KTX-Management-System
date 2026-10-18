@@ -1,0 +1,48 @@
+[
+  {
+    "roomId": "P101",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 1,
+    "maxStudents": 8,
+    "status": "EMPTY",
+    "basePrice": 400000.0,
+    "chair": true,
+    "desk": true,
+    "fan": true,
+    "showerHeater": false,
+    "internet": false,
+    "airConditioner": false
+  },
+  {
+    "roomId": "P102",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 1,
+    "maxStudents": 8,
+    "status": "EMPTY",
+    "basePrice": 400000.0,
+    "chair": true,
+    "desk": true,
+    "fan": true,
+    "showerHeater": false,
+    "internet": false,
+    "airConditioner": false
+  },
+  {
+    "roomId": "P201",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 2,
+    "maxStudents": 4,
+    "status": "EMPTY",
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "chair": true,
+    "desk": true,
+    "fan": true,
+    "showerHeater": true,
+    "internet": true,
+    "airConditioner": true
+  }
+]
