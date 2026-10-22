@@ -1,153 +1,105 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <nlohmann/json.hpp>
-#include "common/Enums.h"
-#include "common/Date.h"
-#include "model/Student.h"
-#include "model/Staff.h"
-#include "model/StandardRoom.h"
-#include "model/VipRoom.h"
-#include "model/Rent.h"
-
-using json = nlohmann::json;
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include "manager/StudentManager.h"
+#include "manager/RoomManager.h"
+#include "manager/StaffManager.h"
+#include "manager/RentManager.h"
 
 int main() {
-    std::cout << "=========================================================" << std::endl;
-    std::cout << "  HE THONG QUAN LY KTX - LUU TRU DU LIEU BANG JSON       " << std::endl;
-    std::cout << "=========================================================\n" << std::endl;
+#ifdef _WIN32
+    // Thiet lap bang ma UTF-8 cho Windows Console de hien thi tieng Viet co dau
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+    std::cout << "=========================================================\n";
+    std::cout << "   HE THONG QUAN LY KTX - DEMO GIAI DOAN 2: MANAGERS     \n";
+    std::cout << "=========================================================\n\n";
 
-    // 1. Thử nghiệm Đọc dữ liệu từ file JSON (data/students.json)
-    std::cout << "--- 1. DOC DANH SACH SINH VIEN TU data/students.json ---" << std::endl;
-    std::vector<Student> studentList;
-    {
-        std::ifstream file("data/students.json");
-        if (file.is_open()) {
-            json jArr;
-            file >> jArr;
-            for (const auto& item : jArr) {
-                studentList.push_back(Student::fromJson(item));
-            }
-            std::cout << "-> Da doc thanh cong " << studentList.size() << " sinh vien tu file JSON:" << std::endl;
-            for (const auto& sv : studentList) {
-                sv.print();
-            }
-        } else {
-            std::cout << "-> Khong mo duoc file data/students.json!" << std::endl;
+    // 1. Khoi tao cac Manager chuyen biet
+    StudentManager studentMgr("data/students.json");
+    RoomManager roomMgr("data/rooms.json");
+    StaffManager staffMgr("data/staffs.json");
+    RentManager rentMgr("data/rents.json");
+
+    // 2. Nap du lieu tu cac file JSON
+    std::cout << "--- 1. NAP DU LIEU TU CAC FILE JSON ---\n";
+    studentMgr.loadFromFile();
+    roomMgr.loadFromFile();
+    staffMgr.loadFromFile();
+    // Dong bo hop dong voi sinh vien va phong
+    rentMgr.loadFromFile(studentMgr, roomMgr);
+
+    // 3. Kiem thu cac phuong thuc ke thua tu Manager<T> (Template)
+    std::cout << "\n--- 2. IN TOAN BO DANH SACH (MANAGER<T>::printAll) ---\n";
+    std::cout << "\n[DANH SACH PHONG]:\n";
+    roomMgr.printAll();
+
+    std::cout << "\n[DANH SACH SINH VIEN]:\n";
+    studentMgr.printAll();
+
+    std::cout << "\n[DANH SACH CAN BO]:\n";
+    staffMgr.printAll();
+
+    std::cout << "\n[DANH SACH HOP DONG]:\n";
+    rentMgr.printAll();
+
+    // 4. Kiem thu nghiep vu dac thu cua tung Manager
+    std::cout << "\n--- 3. KIEM THU NGIEP VU TIM KIEM & LOC ---\n";
+    std::cout << "\n> Loc cac phong con trong:\n";
+    roomMgr.printAvailableRoom();
+
+    std::cout << "\n> Tim sinh vien thuoc lop '22T_DT1':\n";
+    auto svLop = studentMgr.findByClass("22T_DT1");
+    for (auto* s : svLop) {
+        s->print();
+    }
+
+    // 5. Kiem thu Tao hop dong moi thong qua RentManager
+    std::cout << "\n--- 4. TAO HOP DONG THUE MOI ---\n";
+    Student* svChuaCoPhong = studentMgr.findById("SV103");
+    Room* phongTrong = roomMgr.findById("P102");
+
+    if (svChuaCoPhong != nullptr && phongTrong != nullptr) {
+        std::cout << "Tien hanh xep sinh vien " << svChuaCoPhong->getFullName()
+                  << " vao phong " << phongTrong->getId() << ":\n";
+        
+        Rent* hdMoi = rentMgr.createRent(
+            "HD003",
+            svChuaCoPhong,
+            phongTrong,
+            Period::SIX_MONTHS,
+            Date(1, 10, 2026),
+            phongTrong->getBasePrice()
+        );
+
+        if (hdMoi != nullptr) {
+            std::cout << "Thong tin phong P102 sau khi them sinh vien:\n";
+            phongTrong->print();
         }
     }
 
-    // 2. Thử nghiệm Đọc danh sách phòng từ file JSON (data/rooms.json) với tính Đa hình
-    std::cout << "\n--- 2. DOC DANH SACH PHONG TU data/rooms.json (DA HINH) ---" << std::endl;
-    std::vector<Room*> roomList;
-    {
-        std::ifstream file("data/rooms.json");
-        if (file.is_open()) {
-            json jArr;
-            file >> jArr;
-            for (const auto& item : jArr) {
-                std::string type = item.value("roomType", "STANDARD");
-                if (type == "VIP") {
-                    roomList.push_back(new VipRoom(VipRoom::fromJson(item)));
-                } else {
-                    roomList.push_back(new StandardRoom(StandardRoom::fromJson(item)));
-                }
-            }
-            std::cout << "-> Da doc thanh cong " << roomList.size() << " phong tu file JSON:" << std::endl;
-            for (Room* r : roomList) {
-                r->print();
-                std::cout << "  --> Phi du kien (50 kWh dien, 3 m3 nuoc): "
-                          << static_cast<long long>(r->calculateTotalFee(50, 3)) << " VND/thang" << std::endl;
-            }
-        }
+    // 6. Kiem thu Thanh ly hop dong som
+    std::cout << "\n--- 5. THANH LY HOP DONG SOM ---\n";
+    std::cout << "Thanh ly hop dong HD001 vao ngay 15/11/2026:\n";
+    rentMgr.terminateRent("HD001", Date(15, 11, 2026));
+
+    Room* p101 = roomMgr.findById("P101");
+    if (p101 != nullptr) {
+        std::cout << "Trang thai phong P101 sau khi sinh vien tra phong:\n";
+        p101->print();
     }
 
-    // 3. Thử nghiệm Đọc hợp đồng từ data/rents.json
-    std::cout << "\n--- 3. DOC HOP DONG THUE TU data/rents.json ---" << std::endl;
-    std::vector<Rent> rentList;
-    {
-        std::ifstream file("data/rents.json");
-        if (file.is_open()) {
-            json jArr;
-            file >> jArr;
-            for (const auto& item : jArr) {
-                std::string sId = item.value("studentId", "");
-                std::string rId = item.value("roomId", "");
+    // 7. Luu du lieu nguoc lai vao cac file JSON
+    std::cout << "\n--- 6. DONG BO & LUU DU LIEU NGUOC LAI FILE JSON ---\n";
+    studentMgr.saveToFile();
+    roomMgr.saveToFile();
+    rentMgr.saveToFile();
 
-                Student* foundStudent = nullptr;
-                for (auto& s : studentList) {
-                    if (s.getId() == sId) {
-                        foundStudent = &s;
-                        break;
-                    }
-                }
-
-                Room* foundRoom = nullptr;
-                for (auto* r : roomList) {
-                    if (r->getId() == rId) {
-                        foundRoom = r;
-                        break;
-                    }
-                }
-
-                Rent rObj = Rent::fromJson(item, foundStudent, foundRoom);
-                rentList.push_back(rObj);
-            }
-
-            std::cout << "-> Da doc thanh cong " << rentList.size() << " hop dong tu file JSON:" << std::endl;
-            for (auto& hd : rentList) {
-                hd.print();
-                std::cout << "  --> Tong gia tri: " << static_cast<long long>(hd.calculateTotalAmount())
-                          << " VND | Han chot: " << hd.getExpectedEndDate().toString() << std::endl;
-                
-                // Gan vao phong
-                if (hd.getRoom() != nullptr) {
-                    hd.getRoom()->addRent(&hd);
-                }
-            }
-        }
-    }
-
-    std::cout << "\nTrang thai phong sau khi nap hop dong tu JSON:" << std::endl;
-    for (Room* r : roomList) {
-        r->print();
-    }
-
-    // 4. Thử nghiệm Thêm sinh viên mới & Xuất ngược lại ra JSON
-    std::cout << "\n--- 4. GHI DU LIEU MOI NGUOC LAI FILE JSON ---" << std::endl;
-    Student svMoi("SV104", "Vu Thi Huong", false, "2005", "0945678901",
-                  "huong.vt@sv.dut.udn.vn", "Quang Tri", "23T_DT1", "CNTT", "K23");
-    studentList.push_back(svMoi);
-    std::cout << "-> Da them sinh vien moi: " << svMoi.getFullName() << std::endl;
-
-    // Xuất ra chuỗi JSON
-    json exportArray = json::array();
-    for (const auto& s : studentList) {
-        exportArray.push_back(s.toJson());
-    }
-
-    std::cout << "\nDu lieu JSON xuat ra (Mau 1 ban ghi):" << std::endl;
-    std::cout << svMoi.serialize() << std::endl;
-
-    // Ghi đè vào data/students.json
-    {
-        std::ofstream outFile("data/students.json");
-        if (outFile.is_open()) {
-            outFile << exportArray.dump(2);
-            std::cout << "-> Da luu thanh cong toan bo " << studentList.size()
-                      << " sinh vien vao data/students.json!" << std::endl;
-        }
-    }
-
-    // Dọn dẹp con trỏ
-    for (Room* r : roomList) {
-        delete r;
-    }
-    roomList.clear();
-
-    std::cout << "\n=========================================================" << std::endl;
-    std::cout << "  CHUYEN DOI HOAN TOAN SANG JSON THANH CONG 100%!       " << std::endl;
-    std::cout << "=========================================================" << std::endl;
+    std::cout << "\n=========================================================\n";
+    std::cout << "  HOAN THANH KIEM THU TOAN BO GIAI DOAN 2 THANH CONG!     \n";
+    std::cout << "=========================================================\n";
 
     return 0;
 }

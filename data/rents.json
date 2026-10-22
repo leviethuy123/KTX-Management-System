@@ -1,22 +1,32 @@
 [
   {
-    "rentId": "HD001",
-    "studentId": "SV101",
-    "roomId": "P101",
-    "rentalPeriod": 6,
-    "startDate": "01/09/2026",
-    "actualEndDate": "01/03/2027",
+    "actualEndDate": "15/11/2026",
     "rentFee": 400000.0,
-    "status": "ACTIVE"
+    "rentId": "HD001",
+    "rentalPeriod": 6,
+    "roomId": "P101",
+    "startDate": "01/09/2026",
+    "status": "TERMINATED",
+    "studentId": "SV101"
   },
   {
-    "rentId": "HD002",
-    "studentId": "SV102",
-    "roomId": "P201",
-    "rentalPeriod": 12,
-    "startDate": "01/09/2026",
     "actualEndDate": "01/09/2027",
     "rentFee": 1200000.0,
-    "status": "ACTIVE"
+    "rentId": "HD002",
+    "rentalPeriod": 12,
+    "roomId": "P201",
+    "startDate": "01/09/2026",
+    "status": "ACTIVE",
+    "studentId": "SV102"
+  },
+  {
+    "actualEndDate": "01/04/2027",
+    "rentFee": 400000.0,
+    "rentId": "HD003",
+    "rentalPeriod": 6,
+    "roomId": "P102",
+    "startDate": "01/10/2026",
+    "status": "ACTIVE",
+    "studentId": "SV103"
   }
 ]
