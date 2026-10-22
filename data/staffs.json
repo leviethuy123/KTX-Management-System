@@ -1,24 +1,24 @@
 [
   {
+    "address": "Da Nang",
+    "birthYear": "1985",
+    "department": "Ban Quan ly KTX",
+    "email": "cuong.lv@dut.udn.vn",
     "employeeId": "CB001",
     "fullName": "Le Van Cuong",
     "gender": true,
-    "birthYear": "1985",
     "phone": "0987654321",
-    "email": "cuong.lv@dut.udn.vn",
-    "address": "Da Nang",
-    "department": "Ban Quan ly KTX",
     "position": "Truong nha Khu A"
   },
   {
+    "address": "Quang Nam",
+    "birthYear": "1990",
+    "department": "Ke toan KTX",
+    "email": "mai.pt@dut.udn.vn",
     "employeeId": "CB002",
     "fullName": "Pham Thi Mai",
     "gender": false,
-    "birthYear": "1990",
     "phone": "0976543210",
-    "email": "mai.pt@dut.udn.vn",
-    "address": "Quang Nam",
-    "department": "Ke toan KTX",
     "position": "Thu quy"
   }
 ]

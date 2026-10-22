@@ -173,3 +173,67 @@ bool RentManager::terminateRent(const std::string& rentId, const Date& actualEnd
               << actualEndDate.toString() << "\n";
     return true;
 }
+
+std::vector<Rent*> RentManager::findExpiringRents(const Date& currentDate, int daysThreshold) const {
+    std::vector<Rent*> results;
+    for (Rent* r : list) {
+        if (r != nullptr && r->isActive()) {
+            Date expDate = r->getExpectedEndDate();
+            int daysLeft = currentDate.daysBetween(expDate);
+            if (daysLeft >= 0 && daysLeft <= daysThreshold) {
+                results.push_back(r);
+            }
+        }
+    }
+    return results;
+}
+
+void RentManager::printExpiringRents(const Date& currentDate, int daysThreshold) const {
+    auto expiring = findExpiringRents(currentDate, daysThreshold);
+    std::cout << "=== DANH SÁCH HỢP ĐỒNG SẮP HẾT HẠN (Trong vòng " << daysThreshold << " ngày tính đến " << currentDate.toString() << ") ===\n";
+    if (expiring.empty()) {
+        std::cout << "(Không có hợp đồng nào sắp hết hạn)\n";
+        return;
+    }
+    for (Rent* r : expiring) {
+        int daysLeft = currentDate.daysBetween(r->getExpectedEndDate());
+        std::cout << "-> Hợp đồng: " << r->getId()
+                  << " | Sinh viên: " << (r->getTenant() ? r->getTenant()->getFullName() : "(N/A)")
+                  << " | Phòng: " << (r->getRoom() ? r->getRoom()->getId() : "(N/A)")
+                  << " | Ngày hết hạn: " << r->getExpectedEndDate().toString()
+                  << " | Còn lại: " << daysLeft << " ngày\n";
+    }
+}
+
+int RentManager::checkAndExpireRents(const Date& currentDate) {
+    int count = 0;
+    for (Rent* r : list) {
+        if (r != nullptr && r->isActive()) {
+            if (r->getExpectedEndDate() < currentDate) {
+                r->setStatus(RentStatus::EXPIRED);
+                r->setActualEndDate(r->getExpectedEndDate());
+                if (r->getRoom() != nullptr) {
+                    r->getRoom()->removeRent(r);
+                }
+                if (r->getTenant() != nullptr) {
+                    r->getTenant()->setRent(nullptr);
+                }
+                std::cout << "[Hết hạn] Hợp đồng " << r->getId() << " đã hết hạn vào ngày "
+                          << r->getExpectedEndDate().toString() << ". Đã giải phóng phòng & cập nhật trạng thái.\n";
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+double RentManager::calculateTotalMonthlyRevenue() const {
+    double total = 0.0;
+    for (const Rent* r : list) {
+        if (r != nullptr && r->isActive()) {
+            total += r->getRentFee();
+        }
+    }
+    return total;
+}
+

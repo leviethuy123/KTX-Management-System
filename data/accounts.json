@@ -1,0 +1,42 @@
+[
+  {
+    "accountId": "ACC001",
+    "ownerId": "CB001",
+    "passwordHash": "22564d98",
+    "role": "ADMIN",
+    "status": true,
+    "username": "admin"
+  },
+  {
+    "accountId": "ACC002",
+    "ownerId": "CB001",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "username": "cuong.lv"
+  },
+  {
+    "accountId": "ACC003",
+    "ownerId": "SV101",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "username": "an.nv"
+  },
+  {
+    "accountId": "ACC004",
+    "ownerId": "SV102",
+    "passwordHash": "48ca3d68",
+    "role": "STUDENT",
+    "status": true,
+    "username": "bich.tt"
+  },
+  {
+    "accountId": "ACC005",
+    "ownerId": "SV103",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "username": "long.lh"
+  }
+]

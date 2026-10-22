@@ -28,6 +28,11 @@ public:
     // Nghiệp vụ lọc mở rộng
     std::vector<Room*> findByBuilding(const std::string& building) const;
     std::vector<Room*> findByType(const std::string& roomType) const;
+
+    // Nghiệp vụ nâng cao Giai đoạn 3: Thống kê lấp đầy & Tính tiền phòng đa hình
+    void getOccupancyStats(int& totalCapacity, int& totalOccupants, double& rate) const;
+    void printOccupancyReport() const;
+    void printRoomBill(const std::string& roomId, double electricUsage, double waterUsage) const;
 };
 
 #endif // ROOM_MANAGER_H

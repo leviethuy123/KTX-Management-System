@@ -73,6 +73,22 @@ Date Date::addMonths(int months) const {
     return Date(newDay, newMonth, newYear);
 }
 
+int Date::toDays() const {
+    int days = 0;
+    for (int y = 1900; y < year; ++y) {
+        days += isLeapYear(y) ? 366 : 365;
+    }
+    for (int m = 1; m < month; ++m) {
+        days += daysInMonth(m, year);
+    }
+    days += day;
+    return days;
+}
+
+int Date::daysBetween(const Date& other) const {
+    return other.toDays() - this->toDays();
+}
+
 bool Date::operator<(const Date& other) const {
     if (year != other.year) return year < other.year;
     if (month != other.month) return month < other.month;

@@ -31,6 +31,8 @@ public:
 
     bool isBefore(const Date& other) const;
     Date addMonths(int months) const;
+    int toDays() const;
+    int daysBetween(const Date& other) const;
 
     bool operator<(const Date& other) const;
     bool operator<=(const Date& other) const;

@@ -31,6 +31,12 @@ public:
     Rent* createRent(const std::string& rentId, Student* student, Room* room,
                      Period period, const Date& startDate, double fee);
     bool terminateRent(const std::string& rentId, const Date& actualEndDate);
+
+    // Nghiệp vụ nâng cao Giai đoạn 3: Giám sát hạn hợp đồng & Doanh thu
+    std::vector<Rent*> findExpiringRents(const Date& currentDate, int daysThreshold = 30) const;
+    void printExpiringRents(const Date& currentDate, int daysThreshold = 30) const;
+    int checkAndExpireRents(const Date& currentDate);
+    double calculateTotalMonthlyRevenue() const;
 };
 
 #endif // RENT_MANAGER_H
