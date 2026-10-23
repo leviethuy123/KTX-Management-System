@@ -1,7 +1,4 @@
-#include "model/Account.h"
-#include <iostream>
-#include <iomanip>
-#include <sstream>
+#include "Account.h"
 
 Account::Account()
     : accountId(""), username(""), passwordHash(""),
@@ -13,60 +10,22 @@ Account::Account(const std::string& accId, const std::string& user,
     : accountId(accId), username(user), passwordHash(hashPassword(pass)),
       role(r), ownerId(owner), status(st) {}
 
-std::string Account::getId() const {
-    return accountId;
-}
+std::string Account::getId() const { return accountId; }
+std::string Account::getAccountId() const { return accountId; }
+std::string Account::getUsername() const { return username; }
+std::string Account::getPasswordHash() const { return passwordHash; }
+Role Account::getRole() const { return role; }
+std::string Account::getOwnerId() const { return ownerId; }
+bool Account::getStatus() const { return status; }
 
-std::string Account::getAccountId() const {
-    return accountId;
-}
-
-std::string Account::getUsername() const {
-    return username;
-}
-
-std::string Account::getPasswordHash() const {
-    return passwordHash;
-}
-
-Role Account::getRole() const {
-    return role;
-}
-
-std::string Account::getOwnerId() const {
-    return ownerId;
-}
-
-bool Account::getStatus() const {
-    return status;
-}
-
-void Account::setAccountId(const std::string& id) {
-    accountId = id;
-}
-
-void Account::setUsername(const std::string& user) {
-    username = user;
-}
-
-void Account::setPasswordHash(const std::string& hash) {
-    passwordHash = hash;
-}
-
-void Account::setRole(Role r) {
-    role = r;
-}
-
-void Account::setOwnerId(const std::string& owner) {
-    ownerId = owner;
-}
-
-void Account::setStatus(bool st) {
-    status = st;
-}
+void Account::setAccountId(const std::string& id) { accountId = id; }
+void Account::setUsername(const std::string& user) { username = user; }
+void Account::setPasswordHash(const std::string& hash) { passwordHash = hash; }
+void Account::setRole(Role r) { role = r; }
+void Account::setOwnerId(const std::string& owner) { ownerId = owner; }
+void Account::setStatus(bool st) { status = st; }
 
 std::string Account::hashPassword(const std::string& password) {
-    // Thuật toán băm DJB2 chuyển chuỗi mật khẩu sang định dạng Hex an toàn
     unsigned long hash = 5381;
     for (char c : password) {
         hash = ((hash << 5) + hash) + static_cast<unsigned char>(c);
@@ -77,7 +36,6 @@ std::string Account::hashPassword(const std::string& password) {
 }
 
 bool Account::verifyPassword(const std::string& password) const {
-    // Kiểm tra khớp mã băm hoặc khớp trực tiếp nếu là plain text
     return passwordHash == hashPassword(password) || passwordHash == password;
 }
 

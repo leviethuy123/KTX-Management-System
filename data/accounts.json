@@ -2,7 +2,7 @@
   {
     "accountId": "ACC001",
     "ownerId": "CB001",
-    "passwordHash": "22564d98",
+    "passwordHash": "admin123",
     "role": "ADMIN",
     "status": true,
     "username": "admin"
@@ -26,7 +26,7 @@
   {
     "accountId": "ACC004",
     "ownerId": "SV102",
-    "passwordHash": "48ca3d68",
+    "passwordHash": "123456",
     "role": "STUDENT",
     "status": true,
     "username": "bich.tt"

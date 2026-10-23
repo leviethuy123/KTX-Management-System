@@ -1,4 +1,4 @@
-#include "manager/DormManager.h"
+#include "DormManager.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -73,14 +73,12 @@ std::string DormManager::inputString(const std::string& prompt) {
     if (!std::getline(std::cin, s)) {
         return "";
     }
-    // Loại bỏ UTF-8 BOM nếu có (thường xuất hiện khi pipe dữ liệu trong Windows PowerShell)
     if (s.size() >= 3 &&
         static_cast<unsigned char>(s[0]) == 0xEF &&
         static_cast<unsigned char>(s[1]) == 0xBB &&
         static_cast<unsigned char>(s[2]) == 0xBF) {
         s.erase(0, 3);
     }
-    // Cắt bỏ ký tự \r và khoảng trắng thừa ở hai đầu
     while (!s.empty() && (s.back() == '\r' || s.back() == ' ' || s.back() == '\t')) {
         s.pop_back();
     }
@@ -409,7 +407,6 @@ void DormManager::handleStudentManagement() {
             Student* newS = new Student(id, name, g, birth, phone, email, address, lop, khoa, khoaHoc);
             if (studentManage->add(newS)) {
                 std::cout << "[Thành công] Đã thêm sinh viên " << name << " vào hệ thống!\n";
-                // Tự động cấp tài khoản sinh viên
                 accountManager->createAccount("ACC_" + id, id, "123456", Role::STUDENT, id);
             }
         }

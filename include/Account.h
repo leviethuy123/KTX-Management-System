@@ -1,23 +1,16 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#include "common/IEntity.h"
-#include "common/Enums.h"
-#include <string>
-#include <nlohmann/json.hpp>
+#include "Common.h"
 
-/**
- * @brief Lớp thực thể Tài khoản người dùng (Khớp sơ đồ XML PBL2).
- * Phân quyền hệ thống theo các Role: STUDENT, STAFF, ADMIN.
- */
 class Account : public IEntity {
 private:
     std::string accountId;
     std::string username;
     std::string passwordHash;
     Role role;
-    std::string ownerId;    // Liên kết với studentId hoặc employeeId
-    bool status;            // true: hoạt động, false: bị khóa
+    std::string ownerId;
+    bool status;
 
 public:
     Account();
@@ -26,7 +19,6 @@ public:
             bool st = true);
     virtual ~Account() = default;
 
-    // Getters & Setters
     std::string getId() const override;
     std::string getAccountId() const;
     std::string getUsername() const;
@@ -42,12 +34,10 @@ public:
     void setOwnerId(const std::string& owner);
     void setStatus(bool st);
 
-    // Nghiệp vụ mật khẩu & bảo mật
     bool verifyPassword(const std::string& password) const;
     void changePassword(const std::string& newPass);
     static std::string hashPassword(const std::string& password);
 
-    // IEntity & JSON
     void print() const override;
     nlohmann::json toJson() const override;
     static Account fromJson(const nlohmann::json& j);

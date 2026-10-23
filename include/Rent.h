@@ -1,18 +1,11 @@
 #ifndef RENT_H
 #define RENT_H
 
-#include "common/IEntity.h"
-#include "common/Date.h"
-#include "common/Enums.h"
-#include <string>
-#include <nlohmann/json.hpp>
+#include "Common.h"
 
 class Student;
 class Room;
 
-/**
- * @brief Lớp Hợp đồng thuê phòng Rent (Hỗ trợ lưu trữ JSON).
- */
 class Rent : public IEntity {
 private:
     std::string rentId;
@@ -31,7 +24,6 @@ public:
          RentStatus st = RentStatus::ACTIVE);
     virtual ~Rent();
 
-    // Getters & Setters
     std::string getId() const override;
     RentStatus getStatus() const;
     void setStatus(RentStatus st);
@@ -50,13 +42,11 @@ public:
     void setActualEndDate(const Date& aDate);
     void setRentFee(double fee);
 
-    // Nghiệp vụ
     Date getExpectedEndDate() const;
     void terminateEarly(Date endDate);
     bool isActive() const;
     double calculateTotalAmount() const;
 
-    // IEntity & JSON
     void print() const override;
     nlohmann::json toJson() const override;
     std::string serialize() const override;

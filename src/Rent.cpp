@@ -1,20 +1,18 @@
-#include "model/Rent.h"
-#include "model/Student.h"
-#include "model/Room.h"
-#include <iostream>
-#include <iomanip>
+#include "Rent.h"
+#include "Human.h"
+#include "Room.h"
 
 Rent::Rent()
     : rentId(""), tenant(nullptr), room(nullptr),
-      rentalPeriod(Period::ONE_MONTH), startDate(Date()),
-      actualEndDate(Date()), rentFee(0.0), status(RentStatus::ACTIVE) {}
+      rentalPeriod(Period::ONE_MONTH), startDate(Date()), actualEndDate(Date()),
+      rentFee(0.0), status(RentStatus::ACTIVE) {}
 
 Rent::Rent(const std::string& id, Student* student, Room* rm,
            Period pe, const Date& start, double fee, RentStatus st)
     : rentId(id), tenant(student), room(rm),
-      rentalPeriod(pe), startDate(start),
-      actualEndDate(start.addMonths(EnumHelper::periodToMonths(pe))),
-      rentFee(fee), status(st) {}
+      rentalPeriod(pe), startDate(start), rentFee(fee), status(st) {
+    actualEndDate = getExpectedEndDate();
+}
 
 Rent::~Rent() {
     tenant = nullptr;
@@ -40,7 +38,8 @@ void Rent::setActualEndDate(const Date& aDate) { actualEndDate = aDate; }
 void Rent::setRentFee(double fee) { rentFee = fee; }
 
 Date Rent::getExpectedEndDate() const {
-    return startDate.addMonths(EnumHelper::periodToMonths(rentalPeriod));
+    int months = EnumHelper::periodToMonths(rentalPeriod);
+    return startDate.addMonths(months);
 }
 
 void Rent::terminateEarly(Date endDate) {
@@ -53,40 +52,35 @@ bool Rent::isActive() const {
 }
 
 double Rent::calculateTotalAmount() const {
-    return EnumHelper::periodToMonths(rentalPeriod) * rentFee;
+    int months = EnumHelper::periodToMonths(rentalPeriod);
+    return months * rentFee;
 }
 
 void Rent::print() const {
-    std::string sId = (tenant != nullptr) ? tenant->getId() : "N/A";
-    std::string rId = (room != nullptr) ? room->getId() : "N/A";
-
-    std::cout << "[HĐ " << std::left << std::setw(6) << rentId << "] "
-              << "Sinh viên: " << std::setw(8) << sId
-              << " | Phòng: " << std::setw(6) << rId
+    std::cout << "[HỢP ĐỒNG " << std::left << std::setw(7) << rentId << "] "
+              << "SV: " << std::setw(8) << (tenant ? tenant->getId() : "N/A")
+              << " | Phòng: " << std::setw(6) << (room ? room->getId() : "N/A")
+              << " | Bắt đầu: " << startDate.toString()
+              << " | Hết hạn: " << actualEndDate.toString()
               << " | Thời hạn: " << std::setw(8) << EnumHelper::periodToString(rentalPeriod)
-              << " | Từ: " << startDate.toString()
-              << " Đến: " << actualEndDate.toString()
-              << " | Đơn giá: " << static_cast<long long>(rentFee) << "đ/tháng"
-              << " | Trạng thái: " << EnumHelper::rentStatusToString(status)
-              << std::endl;
+              << " | Giá thuê: " << std::fixed << std::setprecision(0) << rentFee << " VNĐ"
+              << " | Trạng thái: " << EnumHelper::rentStatusToString(status) << std::endl;
 }
 
 nlohmann::json Rent::toJson() const {
-    nlohmann::json j;
-    j["rentId"] = rentId;
-    j["studentId"] = (tenant != nullptr) ? tenant->getId() : "";
-    j["roomId"] = (room != nullptr) ? room->getId() : "";
-    j["rentalPeriod"] = EnumHelper::periodToMonths(rentalPeriod);
-    j["startDate"] = startDate.toString();
-    j["actualEndDate"] = actualEndDate.toString();
-    j["rentFee"] = rentFee;
-    j["status"] = EnumHelper::rentStatusToString(status);
-    return j;
+    return {
+        {"rentId", rentId},
+        {"studentId", tenant ? tenant->getId() : ""},
+        {"roomId", room ? room->getId() : ""},
+        {"rentalPeriod", EnumHelper::periodToMonths(rentalPeriod)},
+        {"startDate", startDate.toString()},
+        {"actualEndDate", actualEndDate.toString()},
+        {"rentFee", rentFee},
+        {"status", EnumHelper::rentStatusToString(status)}
+    };
 }
 
-std::string Rent::serialize() const {
-    return toJson().dump(2);
-}
+std::string Rent::serialize() const { return toJson().dump(2); }
 
 Rent Rent::fromJson(const nlohmann::json& j, Student* s, Room* r) {
     std::string id = j.value("rentId", "");

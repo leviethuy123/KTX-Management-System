@@ -1,23 +1,29 @@
-#ifndef ENUMS_H
-#define ENUMS_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <string>
+#include <vector>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <nlohmann/json.hpp>
 
-// Giới tính
+// =========================================================================
+// 1. CÁC KIỂU LIỆT KÊ (ENUMS) & TIỆN ÍCH CHUYỂN ĐỔI CHUỖI
+// =========================================================================
+
 enum class Gender {
     MALE,
     FEMALE,
     OTHER
 };
 
-// Vai trò người dùng
 enum class Role {
     STUDENT,
     STAFF,
     ADMIN
 };
 
-// Trạng thái phòng (Theo sơ đồ XML: EMPTY, OCCUPIED, FULL, MAINTENANCE)
 enum class RoomStatus {
     EMPTY,       // Còn trống
     OCCUPIED,    // Đang có người ở
@@ -25,14 +31,12 @@ enum class RoomStatus {
     MAINTENANCE  // Đang bảo trì
 };
 
-// Trạng thái hợp đồng thuê (Theo sơ đồ XML: ACTIVE, EXPIRED, TERMINATED)
 enum class RentStatus {
     ACTIVE,      // Đang hiệu lực
     EXPIRED,     // Hết hạn
     TERMINATED   // Chấm dứt sớm
 };
 
-// Thời hạn hợp đồng thuê (Period theo sơ đồ XML)
 enum class Period {
     ONE_MONTH = 1,
     THREE_MONTHS = 3,
@@ -126,4 +130,65 @@ namespace EnumHelper {
     }
 }
 
-#endif // ENUMS_H
+// =========================================================================
+// 2. LỚP XỬ LÝ NGÀY THÁNG (DATE)
+// =========================================================================
+
+class Date {
+private:
+    int day;
+    int month;
+    int year;
+
+    static bool isLeapYear(int y);
+    static int daysInMonth(int m, int y);
+
+public:
+    Date();
+    Date(int d, int m, int y);
+
+    int getDay() const;
+    int getMonth() const;
+    int getYear() const;
+
+    void setDay(int d);
+    void setMonth(int m);
+    void setYear(int y);
+
+    bool isValid() const;
+    std::string toString() const;
+    static Date fromString(const std::string& str);
+
+    bool isBefore(const Date& other) const;
+    Date addMonths(int months) const;
+    int toDays() const;
+    int daysBetween(const Date& other) const;
+
+    bool operator<(const Date& other) const;
+    bool operator<=(const Date& other) const;
+    bool operator>(const Date& other) const;
+    bool operator>=(const Date& other) const;
+    bool operator==(const Date& other) const;
+    bool operator!=(const Date& other) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const Date& dt);
+};
+
+// =========================================================================
+// 3. INTERFACE CƠ SỞ (IENTITY)
+// =========================================================================
+
+class IEntity {
+public:
+    virtual ~IEntity() = default;
+
+    virtual std::string getId() const = 0;
+    virtual void print() const = 0;
+    virtual nlohmann::json toJson() const = 0;
+
+    virtual std::string serialize() const {
+        return toJson().dump(2);
+    }
+};
+
+#endif // COMMON_H

@@ -1,6 +1,4 @@
-#include "../../include/common/Date.h"
-#include <iomanip>
-#include <sstream>
+#include "Common.h"
 
 bool Date::isLeapYear(int y) {
     return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);

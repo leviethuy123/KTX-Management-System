@@ -194,53 +194,28 @@ classDiagram
 
 ---
 
-## 📁 4. Cấu trúc Thư mục Dự án
+## 📁 4. Cấu trúc Thư mục Dự án (Đã tối ưu & Gộp gọn gàng)
 
 ```text
 KTX-Management-System/
 ├── include/                     # Header files (.h)
-│   ├── common/                  # Thư viện tiện ích và dùng chung
-│   │   ├── Date.h               # Lớp Date xử lý thời gian, so sánh và tính khoảng cách ngày
-│   │   ├── Enums.h              # Định nghĩa các Enum (Role, Gender, RoomStatus, RentStatus,...)
-│   │   └── IEntity.h            # Interface cơ sở cho mọi Entity
-│   ├── model/                   # Các lớp thực thể (Business Models)
-│   │   ├── Human.h              # Lớp cơ sở trừu tượng con người
-│   │   ├── Student.h            # Lớp Sinh viên
-│   │   ├── Staff.h              # Lớp Cán bộ
-│   │   ├── Room.h               # Lớp cơ sở trừu tượng phòng
-│   │   ├── StandardRoom.h       # Phòng Tiêu chuẩn (8 chỗ)
-│   │   ├── VipRoom.h            # Phòng VIP (4 chỗ, điều hòa, dịch vụ cao cấp)
-│   │   ├── Rent.h               # Hợp đồng thuê phòng
-│   │   └── Account.h            # Tài khoản người dùng & bảo mật
-│   ├── manager/                 # Các lớp quản lý dữ liệu & nghiệp vụ (Manager Layer)
-│   │   ├── Manager.h            # Lớp khuôn mẫu generic Manager<T> (Repository Template)
-│   │   ├── StudentManager.h     # Quản lý Sinh viên
-│   │   ├── RoomManager.h        # Quản lý Phòng & Tính toán lấp đầy, hóa đơn điện nước
-│   │   ├── StaffManager.h       # Quản lý Cán bộ
-│   │   ├── RentManager.h        # Quản lý Hợp đồng, giám sát hạn, doanh thu
-│   │   ├── AccountManager.h     # Quản lý Tài khoản & Xác thực người dùng
-│   │   └── DormManager.h        # Điều phối trung tâm hệ thống KTX (Facade Pattern)
+│   ├── Common.h                 # Nền tảng dùng chung (Enums, Date, IEntity)
+│   ├── Human.h                  # Cây Con người (Human, Student, Staff)
+│   ├── Room.h                   # Cây Phòng ở đa hình (Room, StandardRoom, VipRoom)
+│   ├── Rent.h                   # Hợp đồng thuê KTX (Rent)
+│   ├── Account.h                # Tài khoản người dùng & bảo mật (Account)
+│   ├── Managers.h               # Tầng Quản lý (Manager<T>, Student-, Room-, Staff-, Rent-, AccountManager)
+│   ├── DormManager.h            # Điều phối trung tâm hệ thống KTX (Facade Pattern)
 │   └── nlohmann/
 │       └── json.hpp             # Thư viện JSON chuẩn cho C++
 ├── src/                         # Source files (.cpp)
-│   ├── common/
-│   │   └── Date.cpp
-│   ├── model/
-│   │   ├── Human.cpp
-│   │   ├── Student.cpp
-│   │   ├── Staff.cpp
-│   │   ├── Room.cpp
-│   │   ├── StandardRoom.cpp
-│   │   ├── VipRoom.cpp
-│   │   ├── Rent.cpp
-│   │   └── Account.cpp
-│   └── manager/
-│       ├── StudentManager.cpp
-│       ├── RoomManager.cpp
-│       ├── StaffManager.cpp
-│       ├── RentManager.cpp
-│       ├── AccountManager.cpp
-│       └── DormManager.cpp
+│   ├── Common.cpp               # Cài đặt Date & tiện ích
+│   ├── Human.cpp                # Cài đặt Human, Student, Staff
+│   ├── Room.cpp                 # Cài đặt Room, StandardRoom, VipRoom
+│   ├── Rent.cpp                 # Cài đặt Rent
+│   ├── Account.cpp              # Cài đặt Account
+│   ├── Managers.cpp             # Cài đặt toàn bộ các Manager
+│   └── DormManager.cpp          # Cài đặt bộ điều phối Facade & Menu CLI
 ├── data/                        # Thư mục chứa các tệp dữ liệu JSON
 │   ├── students.json            # Dữ liệu sinh viên
 │   ├── rooms.json               # Dữ liệu phòng
@@ -249,6 +224,7 @@ KTX-Management-System/
 │   └── accounts.json            # Dữ liệu tài khoản người dùng
 ├── main.cpp                     # Điểm khởi chạy ứng dụng (Main Entry Point)
 ├── CHUC_NANG_CAC_HAM.md         # Sổ tay tra cứu chức năng toàn bộ các hàm
+├── HUONG_DAN_HOC_VA_CODE_LAI.md # Hướng dẫn đọc hiểu và lộ trình code lại
 ├── PBL2.drawio.xml              # Sơ đồ thiết kế kiến trúc chuẩn (draw.io)
 ├── PBL2.drawio.png              # Hình ảnh sơ đồ quan hệ lớp UML
 └── README.md                    # Tài liệu hướng dẫn đồ án
@@ -310,7 +286,7 @@ Hệ thống sử dụng thư viện chuẩn **`nlohmann/json`** để lưu tr�
 Sử dụng lệnh `g++` để biên dịch toàn bộ hệ thống:
 
 ```powershell
-g++ -std=c++17 -Iinclude src/common/Date.cpp src/model/Human.cpp src/model/Student.cpp src/model/Staff.cpp src/model/Room.cpp src/model/StandardRoom.cpp src/model/VipRoom.cpp src/model/Rent.cpp src/model/Account.cpp src/manager/StudentManager.cpp src/manager/RoomManager.cpp src/manager/StaffManager.cpp src/manager/RentManager.cpp src/manager/AccountManager.cpp src/manager/DormManager.cpp main.cpp -o app.exe
+g++ -std=c++17 -Iinclude src/*.cpp main.cpp -o app.exe
 ```
 
 ### Chạy chương trình

@@ -2,7 +2,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "manager/DormManager.h"
+#include "DormManager.h"
 
 int main() {
 #ifdef _WIN32
