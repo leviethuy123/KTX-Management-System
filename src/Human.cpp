@@ -35,11 +35,13 @@ void Human::setAddress(const std::string& addr) { address = addr; }
 Student::Student()
     : Human(), studentId(""), className(""), faculty(""), cohort(""), rentInfo(nullptr) {}
 
-Student::Student(const std::string& id, const std::string& name, Gender g,
-                 const std::string& p, const std::string& e, const std::string& b,
-                 const std::string& a, const std::string& cName,
-                 const std::string& fac, const std::string& coh)
-    : Human(name, g, p, e, b, a),studentId(id), className(cName), faculty(fac), cohort(coh) {}
+Student::Student(const std::string& id, const std::string& name, bool g,
+                 const std::string& birth, const std::string& p, const std::string& em,
+                 const std::string& addr, const std::string& cName,
+                 const std::string& fac, const std::string& coh, Rent* r)
+    : Human(name, g ? Gender::MALE : Gender::FEMALE, birth, p, em, addr),
+      studentId(id), className(cName), faculty(fac), cohort(coh), rentInfo(r) {}
+
 Student::~Student() {
     rentInfo = nullptr;
 }

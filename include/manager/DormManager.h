@@ -1,7 +1,11 @@
 #ifndef DORM_MANAGER_H
 #define DORM_MANAGER_H
 
-#include "Managers.h"
+#include "manager/RoomManager.h"
+#include "manager/StudentManager.h"
+#include "manager/RentManager.h"
+#include "manager/StaffManager.h"
+#include "manager/AccountManager.h"
 
 /**
  * @brief Lớp điều phối trung tâm toàn bộ hệ thống Ký túc xá (Facade Design Pattern).

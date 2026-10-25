@@ -66,32 +66,50 @@
 
 ---
 
-## 🏢 MODULE 3: CÂY PHÒNG Ở ĐA HÌNH (`include/Room.h` & `src/Room.cpp`)
+## 🏢 MODULE 3: CÂY PHÒNG Ở & QUẢN LÝ THIẾT BỊ HỎNG (`include/Room.h` & `src/Room.cpp`)
 
-### 1. Lớp cơ sở trừu tượng `Room`
+### 1. Lớp `BrokenDevice` (Quản lý thiết bị hư hỏng trong phòng)
+| Tên hàm | Chức năng ngắn gọn |
+| :--- | :--- |
+| `getDeviceId(), getDeviceName()` | Lấy mã định danh và tên thiết bị báo hỏng (ví dụ: `TB01`, Quạt trần). |
+| `getDescription()` | Lấy mô tả chi tiết tình trạng hư hỏng (kêu to, chập cháy, gãy chân,...). |
+| `getReportDate()` | Lấy ngày sinh viên hoặc cán bộ ghi nhận báo hỏng. |
+| `isFixed() / setFixed(bool)` | Kiểm tra và cập nhật trạng thái sửa chữa thiết bị (`true`: Đã sửa xong). |
+| `print()` | In thông tin chi tiết thiết bị hỏng ra màn hình. |
+| `toJson() / fromJson()` | Đọc và ghi dữ liệu thiết bị hỏng với JSON. |
+
+### 2. Lớp cơ sở trừu tượng `Room`
 | Tên hàm | Chức năng ngắn gọn |
 | :--- | :--- |
 | `getId()` | Trả về mã phòng `roomId` (ví dụ: `P101`, `P201`). |
+| `getBasePrice() / setBasePrice()` | Quản lý giá thuê phòng cơ bản (được đưa lên lớp cha `Room`). |
+| `getEquipmentList()` *(thuần ảo)* | **Đa hình:** Trả về danh mục trang thiết bị mặc định của loại phòng. |
+| `hasEquipment(name)` | Kiểm tra xem phòng có được trang bị thiết bị này không. |
+| `isEquipmentWorking(name)` | Kiểm tra xem thiết bị đó có đang hoạt động tốt (không bị hỏng) không. |
 | `addRent(Rent*)` | Thêm hợp đồng sinh viên vào phòng; tự động đổi trạng thái sang `OCCUPIED` hoặc `FULL`. |
 | `removeRent(Rent*)` | Gỡ hợp đồng khi sinh viên trả phòng; tự động đổi trạng thái về `EMPTY` hoặc `OCCUPIED`. |
 | `isEmpty()` | Kiểm tra phòng có đang trống hoàn toàn hay không (`activeRent.empty()`). |
 | `isFull()` | Kiểm tra phòng đã đủ người chưa (`activeRent.size() >= maxStudents`). |
+| `addBrokenDevice(BrokenDevice)` | Báo hỏng và thêm thiết bị hỏng vào danh sách `brokenDevices` của phòng. |
+| `fixBrokenDevice(id)` | Đánh dấu thiết bị đã được sửa chữa hoàn tất. |
+| `countUnfixedDevices()` | Đếm số lượng thiết bị chưa được sửa chữa trong phòng. |
+| `printBrokenDevices()` | In danh sách toàn bộ thiết bị báo hỏng của phòng. |
 | `calculateTotalFee()` *(thuần ảo)* | Phương thức đa hình tính tổng tiền phòng (được lớp con ghi đè). |
 | `getRoomType()` *(thuần ảo)* | Trả về loại phòng (`STANDARD` hoặc `VIP`). |
 
-### 2. Lớp `StandardRoom` (Phòng Tiêu chuẩn - Kế thừa `Room`)
+### 3. Lớp `StandardRoom` (Phòng Tiêu chuẩn - Kế thừa `Room`)
 | Tên hàm | Chức năng ngắn gọn |
 | :--- | :--- |
 | `calculateTotalFee(elec, water)` | **Đa hình:** $\text{Giá gốc (400k)} + (\text{Điện} \times 3.000) + (\text{Nước} \times 10.000)$. |
-| `getAmenities()` | Trả về danh sách tiện ích cơ bản (quạt, bàn học, ghế). |
-| `toJson() / fromJson()` | Đọc và ghi dữ liệu phòng thường cùng trang thiết bị kèm theo. |
+| `getEquipmentList()` | **Đa hình:** Trả về danh mục: `"Bàn học, Ghế, Quạt trần"`. |
+| `toJson() / fromJson()` | Đọc và ghi dữ liệu phòng thường cùng danh sách thiết bị hỏng. |
 
-### 3. Lớp `VipRoom` (Phòng VIP dịch vụ cao cấp - Kế thừa `Room`)
+### 4. Lớp `VipRoom` (Phòng VIP dịch vụ cao cấp - Kế thừa `Room`)
 | Tên hàm | Chức năng ngắn gọn |
 | :--- | :--- |
 | `calculateTotalFee(elec, water)` | **Đa hình:** $\text{Giá gốc (1.2tr)} + \text{Phí VIP (250k)} + (\text{Điện} \times 3.000) + (\text{Nước} \times 10.000)$. |
-| `getAmenities()` | Trả về danh sách tiện ích VIP (điều hòa, bình nóng lạnh, wifi, dọn phòng). |
-| `getServiceFee()` | Lấy mức phí dịch vụ cộng thêm của phòng VIP. |
+| `getEquipmentList()` | **Đa hình:** Trả về danh mục: `"Bàn ghế cao cấp, Quạt, Điều hòa, Bình nóng lạnh, Wifi"`. |
+| `getServiceFee() / setServiceFee()` | Quản lý mức phí dịch vụ VIP riêng biệt (250.000 VNĐ). |
 
 ---
 
@@ -120,7 +138,7 @@
 
 ---
 
-## ⚙️ MODULE 6: TẦNG QUẢN LÝ REPOSITORY (`include/Managers.h` & `src/Managers.cpp`)
+## ⚙️ MODULE 6: TẦNG QUẢN LÝ REPOSITORY (`include/manager/` & `src/manager/`)
 
 ### 1. Khuôn mẫu Generic `Manager<T>`
 | Tên hàm | Chức năng ngắn gọn |
@@ -142,7 +160,7 @@
 
 ---
 
-## 🎮 MODULE 7: ĐIỀU PHỐI MẶT TIỀN FACADE (`include/DormManager.h` & `src/DormManager.cpp`)
+## 🎮 MODULE 7: ĐIỀU PHỐI MẶT TIỀN FACADE (`include/manager/DormManager.h` & `src/manager/DormManager.cpp`)
 
 | Tên hàm | Chức năng ngắn gọn |
 | :--- | :--- |

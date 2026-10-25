@@ -1,4 +1,4 @@
-#include "DormManager.h"
+#include "manager/DormManager.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -206,6 +206,7 @@ void DormManager::runStudentMenu() {
                 Room* rm = s->getRent()->getRoom();
                 if (rm != nullptr) {
                     rm->print();
+                    rm->printBrokenDevices();
                     std::cout << "\nDanh sách bạn cùng phòng:\n";
                     for (const Rent* r : rm->getActiveRent()) {
                         if (r != nullptr && r->getTenant() != nullptr) {
@@ -335,7 +336,9 @@ void DormManager::handleRoomManagement() {
     std::cout << " 2. Lọc các phòng còn chỗ trống\n";
     std::cout << " 3. Lọc phòng theo Tòa nhà\n";
     std::cout << " 4. Lọc phòng theo Loại phòng (STANDARD / VIP)\n";
-    std::cout << " 5. Xem chi tiết 1 phòng theo mã\n";
+    std::cout << " 5. Xem chi tiết 1 phòng theo mã & thiết bị hỏng\n";
+    std::cout << " 6. Báo hỏng thiết bị trong phòng\n";
+    std::cout << " 7. Xác nhận đã sửa chữa thiết bị\n";
     std::cout << " 0. Quay lại\n";
     int c = inputInt(">> Lựa chọn: ");
 
@@ -356,7 +359,47 @@ void DormManager::handleRoomManagement() {
         for (const Room* r : list) r->print();
     } else if (c == 5) {
         std::string id = inputString("Nhập mã phòng: ");
-        roomManage->printById(id);
+        Room* r = roomManage->findById(id);
+        if (r != nullptr) {
+            r->print();
+            r->printBrokenDevices();
+        } else {
+            std::cout << "[Lỗi] Không tìm thấy phòng có mã: " << id << "\n";
+        }
+    } else if (c == 6) {
+        std::cout << "\n--- BÁO HỎNG THIẾT BỊ PHÒNG ---\n";
+        std::string id = inputString("Nhập mã phòng: ");
+        Room* r = roomManage->findById(id);
+        if (r == nullptr) {
+            std::cout << "[Lỗi] Không tìm thấy phòng: " << id << "\n";
+        } else {
+            std::string dId = inputString("Mã thiết bị (ví dụ: TB01): ");
+            std::string dName = inputString("Tên thiết bị (ví dụ: Quạt trần, Bàn học, Bóng đèn,...): ");
+            std::string desc = inputString("Mô tả tình trạng hư hỏng: ");
+            std::string dateStr = inputString("Ngày báo hỏng (dd/mm/yyyy, Enter để dùng 25/10/2026): ");
+            Date d = dateStr.empty() ? Date(25, 10, 2026) : Date::fromString(dateStr);
+            r->addBrokenDevice(BrokenDevice(dId, dName, desc, d, false));
+            roomManage->saveToFile();
+            std::cout << "[Thành công] Đã ghi nhận thiết bị hỏng '" << dName << "' cho phòng " << id << "!\n";
+        }
+    } else if (c == 7) {
+        std::cout << "\n--- XỬ LÝ / SỬA CHỮA THIẾT BỊ HỎNG ---\n";
+        std::string id = inputString("Nhập mã phòng: ");
+        Room* r = roomManage->findById(id);
+        if (r == nullptr) {
+            std::cout << "[Lỗi] Không tìm thấy phòng: " << id << "\n";
+        } else {
+            r->printBrokenDevices();
+            if (r->hasBrokenDevices()) {
+                std::string dId = inputString("Nhập mã hoặc tên thiết bị đã sửa chữa: ");
+                if (r->fixBrokenDevice(dId)) {
+                    roomManage->saveToFile();
+                    std::cout << "[Thành công] Đã cập nhật thiết bị '" << dId << "' sang trạng thái ĐÃ SỬA XONG!\n";
+                } else {
+                    std::cout << "[Lỗi] Không tìm thấy thiết bị: " << dId << "\n";
+                }
+            }
+        }
     }
     pauseScreen();
 }

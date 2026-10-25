@@ -67,6 +67,16 @@ classDiagram
         +print() void
     }
 
+    class BrokenDevice {
+        -deviceId: string
+        -deviceName: string
+        -description: string
+        -reportDate: Date
+        -isRepaired: bool
+        +print() void
+        +toJson() json
+    }
+
     class Room {
         <<abstract>>
         #roomId: string
@@ -74,20 +84,27 @@ classDiagram
         #floor: int
         #status: RoomStatus
         #maxStudents: int
+        #basePrice: double
         #activeRent: vector~Rent*~
+        #brokenDevices: vector~BrokenDevice~
+        +getEquipmentList() string*
+        +hasEquipment(name) bool
+        +isEquipmentWorking(name) bool
         +calculateTotalFee(elec, water) double*
         +addRent(rent) void
         +removeRent(rent) bool
+        +addBrokenDevice(dev) void
+        +fixBrokenDevice(id) bool
     }
 
     class StandardRoom {
-        -basePrice: double
+        +getEquipmentList() string
         +calculateTotalFee(elec, water) double
     }
 
     class VipRoom {
-        -basePrice: double
         -serviceFee: double
+        +getEquipmentList() string
         +calculateTotalFee(elec, water) double
     }
 
@@ -171,6 +188,7 @@ classDiagram
 
     Rent --> Student : tenant
     Rent --> Room : room
+    Room *-- BrokenDevice : brokenDevices
 ```
 
 ### 🌟 4 Trụ cột OOP trong đồ án
@@ -194,7 +212,7 @@ classDiagram
 
 ---
 
-## 📁 4. Cấu trúc Thư mục Dự án (Đã tối ưu & Gộp gọn gàng)
+## 📁 4. Cấu trúc Thư mục Dự án
 
 ```text
 KTX-Management-System/
@@ -204,8 +222,14 @@ KTX-Management-System/
 │   ├── Room.h                   # Cây Phòng ở đa hình (Room, StandardRoom, VipRoom)
 │   ├── Rent.h                   # Hợp đồng thuê KTX (Rent)
 │   ├── Account.h                # Tài khoản người dùng & bảo mật (Account)
-│   ├── Managers.h               # Tầng Quản lý (Manager<T>, Student-, Room-, Staff-, Rent-, AccountManager)
-│   ├── DormManager.h            # Điều phối trung tâm hệ thống KTX (Facade Pattern)
+│   ├── manager/                 # Tầng Quản lý nghiệp vụ (Repository & Facade)
+│   │   ├── Manager.h            # Lớp mẫu generic template Manager<T>
+│   │   ├── StudentManager.h     # Quản lý sinh viên
+│   │   ├── RoomManager.h        # Quản lý phòng ở & thống kê
+│   │   ├── StaffManager.h       # Quản lý cán bộ
+│   │   ├── RentManager.h        # Quản lý hợp đồng & xếp chỗ
+│   │   ├── AccountManager.h     # Quản lý tài khoản & xác thực
+│   │   └── DormManager.h        # Điều phối trung tâm hệ thống KTX (Facade)
 │   └── nlohmann/
 │       └── json.hpp             # Thư viện JSON chuẩn cho C++
 ├── src/                         # Source files (.cpp)
@@ -214,8 +238,13 @@ KTX-Management-System/
 │   ├── Room.cpp                 # Cài đặt Room, StandardRoom, VipRoom
 │   ├── Rent.cpp                 # Cài đặt Rent
 │   ├── Account.cpp              # Cài đặt Account
-│   ├── Managers.cpp             # Cài đặt toàn bộ các Manager
-│   └── DormManager.cpp          # Cài đặt bộ điều phối Facade & Menu CLI
+│   └── manager/                 # Cài đặt từng Manager riêng biệt
+│       ├── StudentManager.cpp   # Cài đặt StudentManager
+│       ├── RoomManager.cpp      # Cài đặt RoomManager
+│       ├── StaffManager.cpp     # Cài đặt StaffManager
+│       ├── RentManager.cpp      # Cài đặt RentManager
+│       ├── AccountManager.cpp   # Cài đặt AccountManager
+│       └── DormManager.cpp      # Cài đặt bộ điều phối Facade & Menu CLI
 ├── data/                        # Thư mục chứa các tệp dữ liệu JSON
 │   ├── students.json            # Dữ liệu sinh viên
 │   ├── rooms.json               # Dữ liệu phòng
@@ -286,7 +315,7 @@ Hệ thống sử dụng thư viện chuẩn **`nlohmann/json`** để lưu tr�
 Sử dụng lệnh `g++` để biên dịch toàn bộ hệ thống:
 
 ```powershell
-g++ -std=c++17 -Iinclude src/*.cpp main.cpp -o app.exe
+g++ -std=c++17 -Iinclude src/*.cpp src/manager/*.cpp main.cpp -o app.exe
 ```
 
 ### Chạy chương trình
