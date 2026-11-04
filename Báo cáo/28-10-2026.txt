@@ -1,0 +1,9 @@
+Báo cáo 28/10/2026
+
+tách xếp chỗ và quản lí hợp đồng 
+lỗi báo lập tức trong lúc khởi tạo => phản hồi trong lúc nhập nếu nhập sai
+in dữ liệu dạng bảng => dễ thấy hơn 
+tính doanh thu từng tháng của từng phòng cụ thể 	
+Dữ liệu tính toán ra khóa trong sinh viên trong className ( bẫy lỗi trong className quy định rõ nhập chính xác) rà soát trong một file chứa thông tin cụ thể
+Faulty muốn đồng bộ => có class riêng chọn 1..10 để chọn khoa
+code lại vector bằng temple 
