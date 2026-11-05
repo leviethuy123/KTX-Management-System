@@ -67,10 +67,8 @@ void RoomManager::printAvailableRoom() const {
         std::cout << "(Không còn phòng nào trống chỗ)\n";
         return;
     }
-    std::cout << "=== DANH SÁCH PHÒNG CÒN CHỖ TRỐNG (" << available.size() << " phòng) ===\n";
-    for (const Room* r : available) {
-        r->print();
-    }
+    std::cout << "\n=== DANH SÁCH PHÒNG CÒN CHỖ TRỐNG (" << available.size() << " phòng) ===\n";
+    TablePrinter::printRooms(available);
 }
 
 std::vector<Room*> RoomManager::findByBuilding(const std::string& building) const {
@@ -111,44 +109,49 @@ void RoomManager::getOccupancyStats(int& totalCapacity, int& totalOccupants, dou
 }
 
 void RoomManager::printOccupancyReport() const {
-    std::cout << "========================================================================================\n";
-    std::cout << "                         BÁO CÁO TỶ LỆ LẤP ĐẦY PHÒNG KÝ TÚC XÁ                          \n";
-    std::cout << "========================================================================================\n";
-    std::cout << std::left << std::setw(12) << "MÃ PHÒNG"
-              << std::setw(14) << "TÒA NHÀ"
-              << std::setw(14) << "LOẠI PHÒNG"
-              << std::setw(12) << "SỨC CHỨA"
-              << std::setw(12) << "ĐANG Ở"
-              << std::setw(14) << "TỶ LỆ (%)"
-              << "TRẠNG THÁI\n";
-    std::cout << "----------------------------------------------------------------------------------------\n";
+    int totalWidth = 98;
+    std::cout << "\n╔" << StringUtils::repeat("═", totalWidth) << "╗\n";
+    std::cout << "║" << StringUtils::padCenter("BÁO CÁO TỶ LỆ LẤP ĐẦY PHÒNG KÝ TÚC XÁ", totalWidth) << "║\n";
+    std::cout << "╠══════════╦════════════╦══════════════╦════════════╦══════════╦══════════════╦════════════════════╣\n";
+    std::cout << "║ " << StringUtils::padRight("MÃ PHÒNG", 8)
+              << " ║ " << StringUtils::padRight("TÒA NHÀ", 10)
+              << " ║ " << StringUtils::padRight("LOẠI PHÒNG", 12)
+              << " ║ " << StringUtils::padRight("SỨC CHỨA", 10)
+              << " ║ " << StringUtils::padRight("ĐANG Ở", 8)
+              << " ║ " << StringUtils::padRight("TỶ LỆ (%)", 12)
+              << " ║ " << StringUtils::padRight("TRẠNG THÁI", 18) << " ║\n";
+    std::cout << "╠══════════╬════════════╬══════════════╬════════════╬══════════╬══════════════╬════════════════════╣\n";
 
     for (const Room* r : list) {
         if (r != nullptr) {
             int occupants = static_cast<int>(r->getActiveRent().size());
             int cap = r->getMaxStudents();
             double pct = cap > 0 ? (occupants * 100.0 / cap) : 0.0;
+            std::ostringstream pctOss;
+            pctOss << std::fixed << std::setprecision(1) << pct << " %";
 
-            std::cout << std::left << std::setw(12) << r->getId()
-                      << std::setw(14) << r->getBuilding()
-                      << std::setw(14) << r->getRoomType()
-                      << std::setw(12) << cap
-                      << std::setw(12) << occupants
-                      << std::setw(12) << std::fixed << std::setprecision(1) << pct << "% "
-                      << EnumHelper::roomStatusToString(r->getStatus()) << "\n";
+            std::cout << "║ " << StringUtils::padRight(r->getId(), 8)
+                      << " ║ " << StringUtils::padRight(r->getBuilding(), 10)
+                      << " ║ " << StringUtils::padRight(r->getRoomType(), 12)
+                      << " ║ " << StringUtils::padRight(std::to_string(cap) + " chỗ", 10)
+                      << " ║ " << StringUtils::padRight(std::to_string(occupants) + " SV", 8)
+                      << " ║ " << StringUtils::padRight(pctOss.str(), 12)
+                      << " ║ " << StringUtils::padRight(EnumHelper::roomStatusToString(r->getStatus()), 18) << " ║\n";
         }
     }
-    std::cout << "----------------------------------------------------------------------------------------\n";
+    std::cout << "╠══════════╩════════════╩══════════════╩════════════╩══════════╩══════════════╩════════════════════╣\n";
 
     int totalCap = 0, totalOcc = 0;
     double overallRate = 0.0;
     getOccupancyStats(totalCap, totalOcc, overallRate);
+    std::ostringstream overallOss;
+    overallOss << std::fixed << std::setprecision(2) << overallRate << " %";
 
-    std::cout << "-> TỔNG SỨC CHỨA TOÀN KTX : " << totalCap << " chỗ\n";
-    std::cout << "-> TỔNG SINH VIÊN ĐANG Ở : " << totalOcc << " sinh viên\n";
-    std::cout << "-> SỐ CHỖ CÒN TRỐNG       : " << (totalCap - totalOcc) << " chỗ\n";
-    std::cout << "-> TỶ LỆ LẤP ĐẦY TOÀN KTX : " << std::fixed << std::setprecision(2) << overallRate << " %\n";
-    std::cout << "========================================================================================\n";
+    std::cout << "║ " << StringUtils::padRight("TỔNG SỨC CHỨA TOÀN KTX : " + std::to_string(totalCap) + " chỗ", 96) << " ║\n";
+    std::cout << "║ " << StringUtils::padRight("TỔNG SINH VIÊN ĐANG Ở : " + std::to_string(totalOcc) + " sinh viên", 96) << " ║\n";
+    std::cout << "║ " << StringUtils::padRight("SỐ CHỖ CÒN TRỐNG       : " + std::to_string(totalCap - totalOcc) + " chỗ", 96) << " ║\n";
+    std::cout << "║ " << StringUtils::padRight("TỶ LỆ LẤP ĐẦY TOÀN KTX : " + overallOss.str(), 96) << " ║\n";
+    std::cout << "╚" << StringUtils::repeat("═", totalWidth) << "╝\n";
 }
 
 void RoomManager::printRoomBill(const std::string& roomId, double electricUsage, double waterUsage) const {
@@ -165,38 +168,110 @@ void RoomManager::printRoomBill(const std::string& roomId, double electricUsage,
     double utilityCost = electricCost + waterCost;
 
     int occupants = static_cast<int>(r->getActiveRent().size());
+    int cardWidth = 74;
 
-    std::cout << "\n=========================================================\n";
-    std::cout << "              PHIẾU BÁO TIỀN PHÒNG & SINH HOẠT PHÍ       \n";
-    std::cout << "=========================================================\n";
-    std::cout << " Mã phòng     : " << r->getId() << " (" << r->getRoomType() << ")\n";
-    std::cout << " Tòa nhà      : " << r->getBuilding() << " - Tầng " << r->getFloor() << "\n";
-    std::cout << " Số người ở   : " << occupants << "/" << r->getMaxStudents() << " sinh viên\n";
-    std::cout << "---------------------------------------------------------\n";
-    std::cout << " 1. Tiền thuê phòng cơ bản : " << std::fixed << std::setprecision(0) << baseFee << " VNĐ\n";
+    std::cout << "\n╔" << StringUtils::repeat("═", cardWidth) << "╗\n";
+    std::cout << "║" << StringUtils::padCenter("PHIẾU BÁO TIỀN PHÒNG & SINH HOẠT PHÍ", cardWidth) << "║\n";
+    std::cout << "╠" << StringUtils::repeat("═", cardWidth) << "╣\n";
+    std::cout << "║ " << StringUtils::padRight("Mã phòng     : " + r->getId() + " (" + r->getRoomType() + ")", cardWidth - 2) << " ║\n";
+    std::cout << "║ " << StringUtils::padRight("Tòa nhà      : " + r->getBuilding() + " - Tầng " + std::to_string(r->getFloor()), cardWidth - 2) << " ║\n";
+    std::cout << "║ " << StringUtils::padRight("Số người ở   : " + std::to_string(occupants) + "/" + std::to_string(r->getMaxStudents()) + " sinh viên", cardWidth - 2) << " ║\n";
+    std::cout << "╠" << StringUtils::repeat("═", cardWidth) << "╣\n";
+    std::cout << "║ " << StringUtils::padRight("1. Tiền thuê phòng cơ bản : " + StringUtils::formatMoney(baseFee), cardWidth - 2) << " ║\n";
     if (r->getRoomType() == "VIP") {
-        std::cout << " 2. Phí dịch vụ VIP        : 250,000 VNĐ\n";
+        std::cout << "║ " << StringUtils::padRight("2. Phí dịch vụ VIP        : 250000 VND", cardWidth - 2) << " ║\n";
     }
-    std::cout << " 3. Tiền điện (" << electricUsage << " kWh x 3,000đ) : " << electricCost << " VNĐ\n";
-    std::cout << " 4. Tiền nước (" << waterUsage << " m³ x 10,000đ)  : " << waterCost << " VNĐ\n";
-    std::cout << "---------------------------------------------------------\n";
-    std::cout << " >> TỔNG CHI PHÍ CẢ PHÒNG : " << totalPolymorphicFee << " VNĐ\n";
+    std::ostringstream elecOss, waterOss;
+    elecOss << std::fixed << std::setprecision(1) << electricUsage;
+    waterOss << std::fixed << std::setprecision(1) << waterUsage;
+    std::cout << "║ " << StringUtils::padRight("3. Tiền điện (" + elecOss.str() + " kWh x 3,000đ) : " + StringUtils::formatMoney(electricCost), cardWidth - 2) << " ║\n";
+    std::cout << "║ " << StringUtils::padRight("4. Tiền nước (" + waterOss.str() + " m³ x 10,000đ)  : " + StringUtils::formatMoney(waterCost), cardWidth - 2) << " ║\n";
+    std::cout << "╠" << StringUtils::repeat("═", cardWidth) << "╣\n";
+    std::cout << "║ " << StringUtils::padRight(">> TỔNG CHI PHÍ CẢ PHÒNG : " + StringUtils::formatMoney(totalPolymorphicFee), cardWidth - 2) << " ║\n";
 
     if (occupants > 0) {
         double utilityPerPerson = utilityCost / occupants;
-        std::cout << " >> Tiền điện nước mỗi bạn : " << utilityPerPerson << " VNĐ / người\n";
-        std::cout << " >> Danh sách sinh viên nhận thông báo:\n";
+        std::cout << "║ " << StringUtils::padRight(">> Tiền điện nước mỗi bạn : " + StringUtils::formatMoney(utilityPerPerson) + " / người", cardWidth - 2) << " ║\n";
+        std::cout << "║ " << StringUtils::padRight(">> Danh sách sinh viên nhận thông báo:", cardWidth - 2) << " ║\n";
         for (const Rent* rent : r->getActiveRent()) {
             if (rent != nullptr && rent->getTenant() != nullptr) {
-                std::cout << "    * SV: " << rent->getTenant()->getFullName()
-                          << " (" << rent->getTenant()->getId() << ")"
-                          << " | Tiền phòng: " << rent->getRentFee() << " VNĐ"
-                          << " + Điện nước: " << utilityPerPerson << " VNĐ"
-                          << " => Tổng nộp: " << (rent->getRentFee() + utilityPerPerson) << " VNĐ\n";
+                std::string lineInfo = "   * SV: " + rent->getTenant()->getFullName()
+                                     + " (" + rent->getTenant()->getId() + ")"
+                                     + " | Tiền phòng: " + StringUtils::formatMoney(rent->getRentFee())
+                                     + " + Điện nước: " + StringUtils::formatMoney(utilityPerPerson)
+                                     + " => Tổng: " + StringUtils::formatMoney(rent->getRentFee() + utilityPerPerson);
+                if (StringUtils::utf8Width(lineInfo) > cardWidth - 2) {
+                    lineInfo = lineInfo.substr(0, cardWidth - 5) + "...";
+                }
+                std::cout << "║ " << StringUtils::padRight(lineInfo, cardWidth - 2) << " ║\n";
             }
         }
     } else {
-        std::cout << " (Phòng hiện chưa có người ở - Chi phí do KTX bảo trì)\n";
+        std::cout << "║ " << StringUtils::padCenter("(Phòng hiện chưa có người ở - Chi phí do KTX bảo trì)", cardWidth) << "║\n";
     }
-    std::cout << "=========================================================\n";
+    std::cout << "╚" << StringUtils::repeat("═", cardWidth) << "╝\n";
+}
+
+RoomRevenueRow RoomManager::calculateRoomMonthlyRevenue(const std::string& roomId, double electricUsage, double waterUsage) const {
+    RoomRevenueRow row = {};
+    Room* r = findById(roomId);
+    if (r == nullptr) {
+        row.roomId = roomId;
+        return row;
+    }
+
+    row.roomId = r->getId();
+    row.roomType = r->getRoomType();
+    row.occupants = static_cast<int>(r->getActiveRent().size());
+    row.maxCapacity = r->getMaxStudents();
+    row.basePrice = r->getBasePrice();
+    row.serviceFee = 0.0;
+    if (r->getRoomType() == "VIP") {
+        const VipRoom* vip = dynamic_cast<const VipRoom*>(r);
+        row.serviceFee = vip ? vip->getServiceFee() : 250000.0;
+    }
+
+    double rentTotal = 0.0;
+    for (const Rent* rent : r->getActiveRent()) {
+        if (rent != nullptr && rent->isActive()) {
+            rentTotal += rent->getRentFee();
+        }
+    }
+    if (rentTotal == 0.0 && row.occupants > 0) {
+        rentTotal = row.basePrice * row.occupants;
+    }
+    row.rentFeeTotal = rentTotal;
+
+    row.electricCost = electricUsage * 3000.0;
+    row.waterCost = waterUsage * 10000.0;
+
+    if (row.occupants > 0) {
+        row.totalRevenue = row.rentFeeTotal + row.serviceFee + row.electricCost + row.waterCost;
+    } else {
+        row.totalRevenue = 0.0;
+        row.serviceFee = 0.0;
+        row.electricCost = 0.0;
+        row.waterCost = 0.0;
+    }
+    return row;
+}
+
+std::vector<RoomRevenueRow> RoomManager::calculateAllRoomsMonthlyRevenue(double defaultElectric, double defaultWater) const {
+    std::vector<RoomRevenueRow> rows;
+    for (const Room* r : list) {
+        if (r != nullptr) {
+            rows.push_back(calculateRoomMonthlyRevenue(r->getId(), defaultElectric, defaultWater));
+        }
+    }
+    return rows;
+}
+
+void RoomManager::printMonthlyRevenueReport(const std::string& monthYear, double defaultElec, double defaultWater) const {
+    auto rows = calculateAllRoomsMonthlyRevenue(defaultElec, defaultWater);
+    TablePrinter::printRevenueTable(rows, monthYear);
+}
+
+void RoomManager::printSpecificRoomRevenue(const std::string& roomId, const std::string& monthYear, double electricUsage, double waterUsage) const {
+    RoomRevenueRow row = calculateRoomMonthlyRevenue(roomId, electricUsage, waterUsage);
+    TablePrinter::printSingleRoomRevenue(row, monthYear);
 }

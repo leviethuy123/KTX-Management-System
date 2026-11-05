@@ -54,7 +54,10 @@ Rent* Student::getRent() const { return rentInfo; }
 void Student::setRent(Rent* rent) { rentInfo = rent; }
 
 void Student::setStudentId(const std::string& id) { studentId = id; }
-void Student::setClass(const std::string& cName) { className = cName; }
+void Student::setClass(const std::string& cName) {
+    className = cName;
+    cohort = ClassValidator::extractCohort(cName);
+}
 void Student::setFaculty(const std::string& fac) { faculty = fac; }
 void Student::setCohort(const std::string& coh) { cohort = coh; }
 

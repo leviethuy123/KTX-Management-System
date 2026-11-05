@@ -60,11 +60,11 @@ BrokenDevice BrokenDevice::fromJson(const nlohmann::json& j) {
 // =========================================================================
 
 Room::Room()
-    : roomId(""), maxStudents(8), status(RoomStatus::EMPTY), floor(1),
-      building("Khu A"), basePrice(0.0) {}
+    : roomId(""), building("Khu A"), floor(1), maxStudents(8),
+      basePrice(0.0), status(RoomStatus::EMPTY) {}
 
 Room::Room(const std::string& id, int maxStd, int fl, const std::string& bld, double price, RoomStatus st)
-    : roomId(id), maxStudents(maxStd), status(st), floor(fl), building(bld), basePrice(price) {}
+    : roomId(id), building(bld), floor(fl), maxStudents(maxStd), basePrice(price), status(st) {}
 
 Room::~Room() {
     activeRent.clear();

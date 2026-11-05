@@ -3,6 +3,7 @@
 
 #include "manager/Manager.h"
 #include "Room.h"
+#include "TablePrinter.h"
 #include <vector>
 #include <string>
 
@@ -24,10 +25,15 @@ public:
     std::vector<Room*> findByBuilding(const std::string& building) const;
     std::vector<Room*> findByType(const std::string& roomType) const;
 
-    // Thống kê & Báo cáo
+    // Thống kê & Báo cáo doanh thu
     void getOccupancyStats(int& totalCapacity, int& totalOccupants, double& rate) const;
     void printOccupancyReport() const;
     void printRoomBill(const std::string& roomId, double electricUsage, double waterUsage) const;
+
+    RoomRevenueRow calculateRoomMonthlyRevenue(const std::string& roomId, double electricUsage, double waterUsage) const;
+    std::vector<RoomRevenueRow> calculateAllRoomsMonthlyRevenue(double defaultElectric = 50.0, double defaultWater = 5.0) const;
+    void printMonthlyRevenueReport(const std::string& monthYear, double defaultElec = 50.0, double defaultWater = 5.0) const;
+    void printSpecificRoomRevenue(const std::string& roomId, const std::string& monthYear, double electricUsage, double waterUsage) const;
 };
 
 #endif // ROOM_MANAGER_H

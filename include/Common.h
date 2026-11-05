@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 // =========================================================================
@@ -55,8 +56,9 @@ namespace EnumHelper {
 
     inline Gender stringToGender(const std::string& str) {
         if (str == "Nam" || str == "MALE" || str == "1") return Gender::MALE;
-        if (str == "Nu" || str == "FEMALE" || str == "0") return Gender::FEMALE;
-        return Gender::OTHER;
+        if (str == "Nu" || str == "FEMALE" || str == "0" || str == "2") return Gender::FEMALE;
+        if (str == "Khac" || str == "OTHER" || str == "3") return Gender::OTHER;
+        throw std::invalid_argument("Giới tính '" + str + "' không hợp lệ! Vui lòng chọn 1 (Nam) hoặc 2 (Nữ).");
     }
 
     inline std::string roleToString(Role r) {
@@ -69,9 +71,10 @@ namespace EnumHelper {
     }
 
     inline Role stringToRole(const std::string& str) {
-        if (str == "STUDENT") return Role::STUDENT;
-        if (str == "STAFF") return Role::STAFF;
-        return Role::ADMIN;
+        if (str == "STUDENT" || str == "Sinh vien" || str == "1") return Role::STUDENT;
+        if (str == "STAFF" || str == "Can bo" || str == "2") return Role::STAFF;
+        if (str == "ADMIN" || str == "Quan tri" || str == "3") return Role::ADMIN;
+        throw std::invalid_argument("Vai trò '" + str + "' không hợp lệ! Vui lòng chọn 1: STUDENT, 2: STAFF, hoặc 3: ADMIN.");
     }
 
     inline std::string roomStatusToString(RoomStatus s) {
@@ -85,10 +88,11 @@ namespace EnumHelper {
     }
 
     inline RoomStatus stringToRoomStatus(const std::string& str) {
-        if (str == "OCCUPIED" || str == "Dang o") return RoomStatus::OCCUPIED;
-        if (str == "FULL" || str == "Day") return RoomStatus::FULL;
-        if (str == "MAINTENANCE" || str == "Bao tri") return RoomStatus::MAINTENANCE;
-        return RoomStatus::EMPTY;
+        if (str == "EMPTY" || str == "Trong" || str == "1") return RoomStatus::EMPTY;
+        if (str == "OCCUPIED" || str == "Dang o" || str == "2") return RoomStatus::OCCUPIED;
+        if (str == "FULL" || str == "Day" || str == "3") return RoomStatus::FULL;
+        if (str == "MAINTENANCE" || str == "Bao tri" || str == "4") return RoomStatus::MAINTENANCE;
+        throw std::invalid_argument("Trạng thái phòng '" + str + "' không hợp lệ! Hợp lệ: EMPTY, OCCUPIED, FULL, MAINTENANCE.");
     }
 
     inline std::string rentStatusToString(RentStatus s) {
@@ -101,9 +105,10 @@ namespace EnumHelper {
     }
 
     inline RentStatus stringToRentStatus(const std::string& str) {
-        if (str == "EXPIRED" || str == "Het han") return RentStatus::EXPIRED;
-        if (str == "TERMINATED" || str == "Da cham dut") return RentStatus::TERMINATED;
-        return RentStatus::ACTIVE;
+        if (str == "ACTIVE" || str == "Hieu luc" || str == "1") return RentStatus::ACTIVE;
+        if (str == "EXPIRED" || str == "Het han" || str == "2") return RentStatus::EXPIRED;
+        if (str == "TERMINATED" || str == "Da cham dut" || str == "3") return RentStatus::TERMINATED;
+        throw std::invalid_argument("Trạng thái hợp đồng '" + str + "' không hợp lệ! Hợp lệ: ACTIVE, EXPIRED, TERMINATED.");
     }
 
     inline int periodToMonths(Period p) {
@@ -116,16 +121,18 @@ namespace EnumHelper {
             case Period::THREE_MONTHS: return "3 thang";
             case Period::SIX_MONTHS: return "6 thang";
             case Period::ONE_YEAR: return "12 thang";
-            default: return "1 thang";
+            default: return std::to_string(static_cast<int>(p)) + " thang";
         }
     }
 
     inline Period intToPeriod(int months) {
         switch (months) {
+            case 1: return Period::ONE_MONTH;
             case 3: return Period::THREE_MONTHS;
             case 6: return Period::SIX_MONTHS;
             case 12: return Period::ONE_YEAR;
-            default: return Period::ONE_MONTH;
+            default:
+                throw std::invalid_argument("Kỳ hạn thuê '" + std::to_string(months) + "' tháng không hợp lệ! Chỉ chấp nhận 1, 3, 6, hoặc 12 tháng.");
         }
     }
 }
@@ -158,6 +165,7 @@ public:
     bool isValid() const;
     std::string toString() const;
     static Date fromString(const std::string& str);
+    static bool tryParse(const std::string& str, Date& outDate);
 
     bool isBefore(const Date& other) const;
     Date addMonths(int months) const;
@@ -189,6 +197,39 @@ public:
     virtual std::string serialize() const {
         return toJson().dump(2);
     }
+};
+
+
+// =========================================================================
+// 4. LỚP QUẢN LÝ KHOA ĐỒNG BỘ (FACULTY - ĐỒNG BỘ 10 KHOA)
+// =========================================================================
+
+class Faculty {
+public:
+    static const std::vector<std::string>& getList();
+    static void printMenu();
+    static std::string getByIndex(int index); // 1..10
+    static bool isValidIndex(int index);
+    static std::string normalizeFaculty(const std::string& input);
+};
+
+// =========================================================================
+// 5. LỚP QUY CHUẨN LỚP SINH HOẠT & TÍNH KHÓA (CLASSVALIDATOR)
+// =========================================================================
+
+class ClassValidator {
+public:
+    // Tự động tính toán ra Khóa từ className (ví dụ: "22T_DT1" -> "K22", "21D_DT2" -> "K21")
+    static std::string extractCohort(const std::string& className);
+
+    // Bẫy lỗi và quy định rõ tính chính xác của className
+    static bool isValidClassName(const std::string& className, std::string& errorReason);
+    static bool isValidClassName(const std::string& className);
+
+    // Rà soát danh mục lớp chuẩn từ file data/classes.json
+    static std::vector<std::string> loadClasses(const std::string& filePath = "data/classes.json");
+    static bool isClassRegistered(const std::string& className, const std::string& filePath = "data/classes.json");
+    static void registerClass(const std::string& className, const std::string& filePath = "data/classes.json");
 };
 
 #endif // COMMON_H

@@ -6,6 +6,7 @@
 #include "manager/RentManager.h"
 #include "manager/StaffManager.h"
 #include "manager/AccountManager.h"
+#include "TablePrinter.h"
 
 /**
  * @brief Lớp điều phối trung tâm toàn bộ hệ thống Ký túc xá (Facade Design Pattern).
@@ -27,16 +28,29 @@ private:
 
     void handleRoomManagement();
     void handleStudentManagement();
-    void handleRentManagement();
-    void handleBillingManagement();
+    void handleAllocationManagement(); // Nghiệp vụ Phân bổ & Xếp chỗ phòng KTX
+    void handleContractManagement();   // Nghiệp vụ Quản lý Hợp đồng KTX
+    void handleRevenueManagement();    // Nghiệp vụ Quản lý Doanh thu & Hóa đơn
     void handleReportManagement();
     void handleAccountManagement();
     void handleChangePassword();
 
+    static void printHeaderInfo();
+    static void clearScreen();
     static void pauseScreen();
     static std::string inputString(const std::string& prompt);
     static int inputInt(const std::string& prompt);
     static double inputDouble(const std::string& prompt);
+    static std::string inputNonEmpty(const std::string& prompt);
+    static Date inputValidDate(const std::string& prompt, const Date& defaultDate = Date(5, 11, 2026));
+    static std::string inputValidPhone(const std::string& prompt);
+    static std::string inputValidEmail(const std::string& prompt);
+    static std::string inputValidClassName(const std::string& prompt);
+    static std::string inputFacultyChoice();
+    static Gender inputGender(const std::string& prompt);
+    static Role inputRole(const std::string& prompt);
+    static Period inputPeriod(const std::string& prompt);
+    static RoomStatus inputRoomStatus(const std::string& prompt);
 
 public:
     DormManager();

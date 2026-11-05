@@ -344,7 +344,15 @@ g++ -std=c++17 -Iinclude src/*.cpp src/manager/*.cpp main.cpp -o app.exe
   - Báo cáo phân tích tỷ lệ lấp đầy phòng ký túc xá (Occupancy Rate).
   - Tính tiền phòng và phụ phí điện nước đa hình (`calculateTotalFee`), chia đều cho sinh viên trong phòng và xuất phiếu báo chi phí.
   - Thống kê doanh thu tiền phòng hàng tháng.
-- [x] **Giai đoạn 4 (Completed):** Xây dựng lớp điều phối trung tâm `DormManager` (**Facade Pattern**) và giao diện dòng lệnh Console Menu tương tác phân quyền (`CLI Dashboard`) độc lập cho 3 vai trò: `ADMIN`, `STAFF`, `STUDENT`. **Hoàn thành 100% đồ án PBL2!**
+- [x] **Giai đoạn 4 (Completed):** Xây dựng lớp điều phối trung tâm `DormManager` (**Facade Pattern**) và giao diện dòng lệnh Console Menu tương tác phân quyền (`CLI Dashboard`) độc lập cho 3 vai trò: `ADMIN`, `STAFF`, `STUDENT`.
+- [x] **Giai đoạn 5 (Nâng cấp Hoàn thiện Bảo vệ PBL2):**
+  1. **Tách riêng Phân bổ & Xếp chỗ** (`handleAllocationManagement`) với **Quản lý Hợp đồng** (`handleContractManagement`): Xếp phòng, chuyển phòng, trả phòng, gia hạn hợp đồng, quét quá hạn.
+  2. **Bẫy lỗi và phản hồi tức thì trong quá trình nhập liệu:** Bắt lỗi định dạng ngày (`dd/mm/yyyy`), số điện thoại 10 số bắt đầu bằng 0, email hợp lệ, chuỗi không được để trống.
+  3. **In dữ liệu dạng Bảng kẻ khung ASCII trực quan (`TablePrinter`):** Bảng danh sách sinh viên, phòng ở, hợp đồng, cán bộ, tài khoản, thiết bị hỏng, và sơ đồ phân bổ phòng.
+  4. **Tính doanh thu chi tiết từng tháng của từng phòng cụ thể và toàn KTX:** Phân bổ chi phí tiền phòng, phụ phí VIP, tiền điện (3.000đ/kWh), tiền nước (10.000đ/m³).
+  5. **Tự động tính Khóa từ `className` & Bẫy lỗi tên lớp:** Trích xuất khóa (K21, K22, K23) từ 2 chữ số đầu, rà soát và lưu trữ danh mục lớp chuẩn vào `data/classes.json`.
+  6. **Đồng bộ 10 Khoa Đại học:** Chuẩn hóa thông qua lớp `Faculty` với menu chọn 1..10, loại bỏ lỗi gõ tự do sai chính tả.
+  **Hoàn thành 100% đồ án PBL2 đạt tiêu chuẩn bảo vệ xuất sắc!**
 
 ---
 

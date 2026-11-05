@@ -13,6 +13,19 @@ class Account;
 class BrokenDevice;
 
 /**
+ * @brief Tiện ích tính toán độ rộng visual và offset chuỗi UTF-8 tiếng Việt
+ */
+namespace StringUtils {
+    int utf8Width(const std::string& str);
+    int utf8Offset(const std::string& str);
+    std::string padRight(const std::string& str, int visualWidth);
+    std::string padLeft(const std::string& str, int visualWidth);
+    std::string padCenter(const std::string& str, int visualWidth);
+    std::string repeat(const std::string& pattern, int count);
+    std::string formatMoney(double amount);
+}
+
+/**
  * @brief Dòng dữ liệu thống kê doanh thu phòng trong một tháng
  */
 struct RoomRevenueRow {
@@ -42,6 +55,7 @@ public:
     static void printBrokenDevices(const std::string& roomId, const std::vector<BrokenDevice>& list);
     static void printRevenueTable(const std::vector<RoomRevenueRow>& rows, const std::string& monthYear);
     static void printSingleRoomRevenue(const RoomRevenueRow& row, const std::string& monthYear);
+    static void printDetailedMonthlyRevenueReport(const std::vector<Rent*>& rents, const std::vector<Room*>& rooms);
 };
 
 #endif // TABLE_PRINTER_H
