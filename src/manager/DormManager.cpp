@@ -114,7 +114,12 @@ int DormManager::inputInt(const std::string& prompt) {
             continue;
         }
         try {
-            return std::stoi(s);
+            size_t pos = 0;
+            int value =  std::stoi(s, &pos);
+            if (pos != s.size()) {
+                throw std::invalid_argument("trailing characters");
+            }
+            return value;
         } catch (const std::exception&) {
             if (std::cin.eof()) return 0;
             std::cout << "[Lỗi] Vui lòng nhập số nguyên hợp lệ!\n";

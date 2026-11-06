@@ -1,7 +1,15 @@
 [
   {
     "basePrice": 400000.0,
-    "brokenDevices": [],
+    "brokenDevices": [
+      {
+        "description": "Hu",
+        "deviceId": "1",
+        "deviceName": "Den",
+        "isRepaired": false,
+        "reportDate": "01/01/2030"
+      }
+    ],
     "building": "Khu A",
     "floor": 1,
     "maxStudents": 8,
@@ -16,7 +24,7 @@
         "description": "Kêu to và quay chậm",
         "deviceId": "TB01",
         "deviceName": "Quạt trần",
-        "isRepaired": false,
+        "isRepaired": true,
         "reportDate": "15/10/2026"
       }
     ],
