@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <sstream>
 #include <fstream>
+#include <ctime>
 #include <nlohmann/json.hpp>
 
 // =========================================================================
@@ -167,6 +168,11 @@ public:
     static Date fromString(const std::string& str);
     static bool tryParse(const std::string& str, Date& outDate);
 
+    // Lấy ngày thực tế từ hệ thống máy tính
+    static Date now();
+    static Date today();
+    static Date getCurrentDate();
+
     bool isBefore(const Date& other) const;
     Date addMonths(int months) const;
     int toDays() const;
@@ -181,6 +187,11 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const Date& dt);
 };
+
+// Hàm tiện ích toàn cục lấy ngày hiện tại của hệ thống
+inline Date getCurrentDate() {
+    return Date::now();
+}
 
 // =========================================================================
 // 3. INTERFACE CƠ SỞ (IENTITY)
@@ -201,20 +212,20 @@ public:
 
 
 // =========================================================================
-// 4. LỚP QUẢN LÝ KHOA ĐỒNG BỘ (FACULTY - ĐỒNG BỘ 10 KHOA)
+// 4. LỚP QUẢN LÝ KHOA ĐỒNG BỘ (FACULTY - ĐỒNG BỘ 8 KHOA CHUẨN ĐHBK)
 // =========================================================================
 
 class Faculty {
 public:
     static const std::vector<std::string>& getList();
     static void printMenu();
-    static std::string getByIndex(int index); // 1..10
+    static std::string getByIndex(int index); // 1..8
     static bool isValidIndex(int index);
     static std::string normalizeFaculty(const std::string& input);
 };
 
 // =========================================================================
-// 5. LỚP QUY CHUẨN LỚP SINH HOẠT & TÍNH KHÓA (CLASSVALIDATOR)
+// 5. LỚP QUY CHUẨN LỚP SINH HOẠT, TÍNH KHÓA & TRÍCH XUẤT KHOA (CLASSVALIDATOR)
 // =========================================================================
 
 class ClassValidator {
@@ -222,14 +233,12 @@ public:
     // Tự động tính toán ra Khóa từ className (ví dụ: "22T_DT1" -> "K22", "21D_DT2" -> "K21")
     static std::string extractCohort(const std::string& className);
 
-    // Bẫy lỗi và quy định rõ tính chính xác của className
+    // Tự động trích xuất Khoa chuẩn từ mã ngành trong className (ví dụ: "22T_DT1" -> "Công nghệ thông tin")
+    static std::string extractFaculty(const std::string& className);
+
+    // Bẫy lỗi và quy định rõ tính chính xác của className (phải khớp Khóa và 8 Khoa chuẩn)
     static bool isValidClassName(const std::string& className, std::string& errorReason);
     static bool isValidClassName(const std::string& className);
-
-    // Rà soát danh mục lớp chuẩn từ file data/classes.json
-    static std::vector<std::string> loadClasses(const std::string& filePath = "data/classes.json");
-    static bool isClassRegistered(const std::string& className, const std::string& filePath = "data/classes.json");
-    static void registerClass(const std::string& className, const std::string& filePath = "data/classes.json");
 };
 
 #endif // COMMON_H

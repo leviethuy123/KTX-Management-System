@@ -9,30 +9,27 @@
 // =========================================================================
 
 BrokenDevice::BrokenDevice()
-    : deviceId(""), deviceName(""), description(""), reportDate(Date()), isRepaired(false) {}
+    : deviceId(""), deviceName(""), description(""), reportDate(Date()) {}
 
 BrokenDevice::BrokenDevice(const std::string& id, const std::string& name,
-                           const std::string& desc, const Date& date, bool repaired)
-    : deviceId(id), deviceName(name), description(desc), reportDate(date), isRepaired(repaired) {}
+                           const std::string& desc, const Date& date)
+    : deviceId(id), deviceName(name), description(desc), reportDate(date) {}
 
 std::string BrokenDevice::getDeviceId() const { return deviceId; }
 std::string BrokenDevice::getDeviceName() const { return deviceName; }
 std::string BrokenDevice::getDescription() const { return description; }
 Date BrokenDevice::getReportDate() const { return reportDate; }
-bool BrokenDevice::isFixed() const { return isRepaired; }
 
 void BrokenDevice::setDeviceId(const std::string& id) { deviceId = id; }
 void BrokenDevice::setDeviceName(const std::string& name) { deviceName = name; }
 void BrokenDevice::setDescription(const std::string& desc) { description = desc; }
 void BrokenDevice::setReportDate(const Date& date) { reportDate = date; }
-void BrokenDevice::setFixed(bool fixed) { isRepaired = fixed; }
 
 void BrokenDevice::print() const {
     std::cout << "[" << std::setw(6) << deviceId << "] "
               << std::left << std::setw(15) << deviceName << " | "
               << "Mô tả: " << std::setw(25) << description << " | "
-              << "Ngày báo: " << reportDate.toString() << " | "
-              << "Trạng thái: " << (isRepaired ? "ĐÃ SỬA XONG" : "⚠️ ĐANG HỎNG") << "\n";
+              << "Ngày báo: " << reportDate.toString() << "\n";
 }
 
 nlohmann::json BrokenDevice::toJson() const {
@@ -40,8 +37,7 @@ nlohmann::json BrokenDevice::toJson() const {
         {"deviceId", deviceId},
         {"deviceName", deviceName},
         {"description", description},
-        {"reportDate", reportDate.toString()},
-        {"isRepaired", isRepaired}
+        {"reportDate", reportDate.toString()}
     };
 }
 
@@ -51,7 +47,6 @@ BrokenDevice BrokenDevice::fromJson(const nlohmann::json& j) {
     d.deviceName = j.value("deviceName", "");
     d.description = j.value("description", "");
     d.reportDate = Date::fromString(j.value("reportDate", "01/01/2026"));
-    d.isRepaired = j.value("isRepaired", false);
     return d;
 }
 
@@ -91,7 +86,7 @@ bool Room::hasEquipment(const std::string& deviceName) const {
 bool Room::isEquipmentWorking(const std::string& deviceName) const {
     if (!hasEquipment(deviceName)) return false;
     for (const auto& dev : brokenDevices) {
-        if (dev.getDeviceName().find(deviceName) != std::string::npos && !dev.isFixed()) {
+        if (dev.getDeviceName().find(deviceName) != std::string::npos) {
             return false;
         }
     }
@@ -116,24 +111,8 @@ bool Room::removeBrokenDevice(const std::string& deviceId) {
     return false;
 }
 
-bool Room::fixBrokenDevice(const std::string& deviceId) {
-    for (auto& dev : brokenDevices) {
-        if (dev.getDeviceId() == deviceId || dev.getDeviceName() == deviceId) {
-            dev.setFixed(true);
-            return true;
-        }
-    }
-    return false;
-}
-
 int Room::countUnfixedDevices() const {
-    int count = 0;
-    for (const auto& dev : brokenDevices) {
-        if (!dev.isFixed()) {
-            count++;
-        }
-    }
-    return count;
+    return static_cast<int>(brokenDevices.size());
 }
 
 bool Room::hasBrokenDevices() const {

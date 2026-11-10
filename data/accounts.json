@@ -8,14 +8,6 @@
     "username": "admin"
   },
   {
-    "accountId": "ACC002",
-    "ownerId": "CB001",
-    "passwordHash": "staff123",
-    "role": "STAFF",
-    "status": true,
-    "username": "cuong.lv"
-  },
-  {
     "accountId": "ACC003",
     "ownerId": "SV101",
     "passwordHash": "123456",
@@ -38,5 +30,13 @@
     "role": "STUDENT",
     "status": true,
     "username": "long.lh"
+  },
+  {
+    "accountId": "ACC006",
+    "ownerId": "ADMIN",
+    "passwordHash": "f83e9f94",
+    "role": "ADMIN",
+    "status": true,
+    "username": "dat"
   }
 ]

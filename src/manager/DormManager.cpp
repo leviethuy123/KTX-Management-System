@@ -72,9 +72,11 @@ void DormManager::clearScreen() {
 }
 
 void DormManager::printHeaderInfo() {
+    Date today = Date::now();
     std::cout << "╔══════════════════════════════════════════════════════════════════════════╗\n";
     std::cout << "║  Phiên bản : 2.0.0                                                       ║\n";
-    std::cout << "║  Ngày HT   : 05 / 11 / 2026                                              ║\n";
+    std::cout << "║  Ngày HT   : " << today.toString();
+    std::cout << "                                                  ║\n";
     std::cout << "╚══════════════════════════════════════════════════════════════════════════╝\n";
 }
 
@@ -172,6 +174,19 @@ Date DormManager::inputValidDate(const std::string& prompt, const Date& defaultD
     }
 }
 
+Date DormManager::inputDateInRange(const std::string& prompt, const Date& minDate, const Date& maxDate, const Date& defaultDate) {
+    while (true) {
+        Date d = inputValidDate(prompt, defaultDate);
+        if (d < minDate || d > maxDate) {
+            std::cout << "[Lỗi] Ngày nhập vào (" << d.toString() 
+                      << ") không hợp lệ! Vui lòng nhập ngày trong khoảng từ " 
+                      << minDate.toString() << " đến " << maxDate.toString() << ".\n";
+            continue;
+        }
+        return d;
+    }
+}
+
 std::string DormManager::inputValidPhone(const std::string& prompt) {
     while (true) {
         if (std::cin.eof()) return "0900000000";
@@ -216,11 +231,7 @@ std::string DormManager::inputValidClassName(const std::string& prompt) {
         try {
             std::string errorReason;
             if (!ClassValidator::isValidClassName(s, errorReason)) {
-                throw std::invalid_argument("Tên lớp không đúng quy định: " + errorReason);
-            }
-            if (!ClassValidator::isClassRegistered(s)) {
-                std::cout << "[Thông báo] Lớp '" << s << "' chưa có trong danh mục lớp chuẩn. Tự động đăng ký mới vào danh mục...\n";
-                ClassValidator::registerClass(s);
+                throw std::invalid_argument(errorReason);
             }
             return s;
         } catch (const std::exception& e) {
@@ -232,13 +243,13 @@ std::string DormManager::inputValidClassName(const std::string& prompt) {
 std::string DormManager::inputFacultyChoice() {
     Faculty::printMenu();
     while (true) {
-        int choice = inputInt(">> Chọn Khoa (1 - 10): ");
+        int choice = inputInt(">> Chọn Khoa (1 - 8): ");
         if (Faculty::isValidIndex(choice)) {
             std::string fac = Faculty::getByIndex(choice);
             std::cout << "-> Đã chọn Khoa: " << fac << "\n";
             return fac;
         }
-        std::cout << "[Lỗi] Lựa chọn không hợp lệ! Vui lòng nhập số từ 1 đến 10.\n";
+        std::cout << "[Lỗi] Lựa chọn không hợp lệ! Vui lòng nhập số từ 1 đến 8.\n";
     }
 }
 
@@ -510,7 +521,7 @@ void DormManager::runAdminMenu() {
         std::cout << "║  [6] Quản lý Hồ sơ Cán bộ KTX                                            ║\n";
         std::cout << "║  [7] Quản lý Hệ thống Tài khoản & Phân quyền                             ║\n";
         std::cout << "║  [8] Báo cáo Thống kê Tổng thể                                           ║\n";
-        std::cout << "║  [9] Đổi mật khẩu cá nhân                                                ║\n";
+        std::cout << "║  [9] Đổi mật khẩu                                                ║\n";
         std::cout << "║  [0] Đăng xuất                                                           ║\n";
         std::cout << "╚══════════════════════════════════════════════════════════════════════════╝\n";
         int choice = inputInt(">> Nhập lựa chọn: ");
@@ -565,6 +576,24 @@ void DormManager::handleRoomManagement() {
         if (c == 1) {
             std::cout << "\n=== TOÀN BỘ DANH SÁCH PHÒNG Ở KÝ TÚC XÁ ===\n";
             TablePrinter::printRooms(roomManage->getAll());
+
+            int ch = 1;
+            while (ch != 0) {
+                ch = inputInt(">> Xem chi tiết phòng(0: NO, 1: YES): ");
+                if (ch == 1)
+                {
+                    std::string id = inputNonEmpty("Nhập mã phòng: ");
+                    Room* r = roomManage->findById(id);
+                    if (r != nullptr) {
+                        std::cout << "\n--- THÔNG TIN CHI TIẾT PHÒNG ---\n";
+                        r->print();
+                        TablePrinter::printBrokenDevices(r->getId(), r->getBrokenDevices());
+                    } else {
+                        std::cout << "[Lỗi] Không tìm thấy phòng có mã: " << id << "\n";
+                    }
+                    break;
+                }
+            }
         } else if (c == 2) {
             auto list = roomManage->findAvailableRoom();
             std::cout << "\n=== DANH SÁCH PHÒNG CÒN CHỖ TRỐNG (" << list.size() << " phòng) ===\n";
@@ -599,10 +628,19 @@ void DormManager::handleRoomManagement() {
                 std::string dId = inputNonEmpty("Mã thiết bị (ví dụ: TB01): ");
                 std::string dName = inputNonEmpty("Tên thiết bị (ví dụ: Quạt trần, Bàn học, Bóng đèn,...): ");
                 std::string desc = inputNonEmpty("Mô tả tình trạng hư hỏng: ");
-                Date d = inputValidDate("Ngày báo hỏng (dd/mm/yyyy, Enter để dùng 05/11/2026): ", Date(5, 11, 2026));
-                r->addBrokenDevice(BrokenDevice(dId, dName, desc, d, false));
+
+                Date minDate(1, 11, 2026);
+                Date sysDate = Date::now();
+                Date maxDate = (sysDate < minDate) ? minDate : sysDate;
+
+                std::string datePrompt = "Ngày báo hỏng (dd/mm/yyyy, từ " + minDate.toString() + 
+                                         " đến " + maxDate.toString() + 
+                                         ", Enter để dùng " + maxDate.toString() + "): ";
+                Date d = inputDateInRange(datePrompt, minDate, maxDate, maxDate);
+
+                r->addBrokenDevice(BrokenDevice(dId, dName, desc, d));
                 roomManage->saveToFile();
-                std::cout << "[Thành công] Đã ghi nhận thiết bị hỏng '" << dName << "' (" << dId << ") cho phòng " << id << "!\n";
+                std::cout << "[Thành công] Đã ghi nhận thiết bị hỏng '" << dName << "' (" << dId << ") cho phòng " << id << " vào ngày " << d.toString() << "!\n";
             }
         } else if (c == 7) {
             std::cout << "\n--- XỬ LÝ / SỬA CHỮA THIẾT BỊ HỎNG ---\n";
@@ -614,9 +652,9 @@ void DormManager::handleRoomManagement() {
                 TablePrinter::printBrokenDevices(r->getId(), r->getBrokenDevices());
                 if (r->hasBrokenDevices()) {
                     std::string dId = inputNonEmpty("Nhập mã hoặc tên thiết bị đã sửa chữa xong: ");
-                    if (r->fixBrokenDevice(dId)) {
+                    if (r->removeBrokenDevice(dId)) {
+                        std::cout << "[Thành công] Đã sửa chữa xong và gỡ bỏ thiết bị '" << dId << "' khỏi danh sách hỏng phòng " << id << "!\n";
                         roomManage->saveToFile();
-                        std::cout << "[Thành công] Đã cập nhật thiết bị '" << dId << "' sang trạng thái ĐÃ SỬA XONG!\n";
                     } else {
                         std::cout << "[Lỗi] Không tìm thấy thiết bị: " << dId << "\n";
                     }
@@ -682,9 +720,9 @@ void DormManager::handleStudentManagement() {
             int birthYear = 0;
             while (true) {
                 try {
-                    birthYear = inputInt("Năm sinh (1980 - 2012, ví dụ 2004): ");
-                    if (birthYear < 1980 || birthYear > 2012) {
-                        throw std::out_of_range("Năm sinh ngoài khoảng hợp lệ (1980-2012)! Vui lòng nhập lại.");
+                    birthYear = inputInt("Năm sinh (2000 - 2008, ví dụ 2004): ");
+                    if (birthYear < 2000 || birthYear > 2008) {
+                        throw std::out_of_range("Năm sinh ngoài khoảng hợp lệ (2000-2008)! Vui lòng nhập lại.");
                     }
                     break;
                 } catch (const std::exception& e) {
@@ -695,10 +733,9 @@ void DormManager::handleStudentManagement() {
 
             std::string lop = inputValidClassName("Lớp sinh hoạt (ví dụ: 22T_DT1, 23KT): ");
             std::string khoaHoc = ClassValidator::extractCohort(lop);
+            std::string khoa = ClassValidator::extractFaculty(lop);
             std::cout << "-> Tự động xác định Khóa: " << khoaHoc << "\n";
-
-            std::cout << "\n--- CHỌN KHOA QUẢN LÝ TRỰC THUỘC ---\n";
-            std::string khoa = inputFacultyChoice();
+            std::cout << "-> Tự động xác định Khoa: " << khoa << "\n";
 
             std::string phone = inputValidPhone("Số điện thoại (10 số, bắt đầu bằng 0): ");
             std::string email = inputValidEmail("Email liên lạc: ");
@@ -803,7 +840,15 @@ void DormManager::handleAllocationManagement() {
             }
 
             Period period = inputPeriod("Thời hạn thuê (1, 3, 6, 12 tháng): ");
-            Date startDate = inputValidDate("Ngày bắt đầu hợp đồng (dd/mm/yyyy, Enter để dùng 05/11/2026): ", Date(5, 11, 2026));
+
+            Date minDate(1, 11, 2026);
+            Date sysDate = Date::now();
+            Date maxDate = (sysDate < minDate) ? minDate : sysDate;
+
+            std::string datePrompt = "Ngày bắt đầu thuê (dd/mm/yyyy, từ " + minDate.toString() + 
+                                        " đến " + maxDate.toString() + 
+                                        ", Enter để dùng " + maxDate.toString() + "): ";
+            Date startDate = inputDateInRange(datePrompt, minDate, maxDate, maxDate);
 
             Rent* newRent = rentManager->createRent(rentId, s, r, period, startDate, r->getBasePrice());
             if (newRent != nullptr) {
@@ -822,8 +867,30 @@ void DormManager::handleAllocationManagement() {
         } else if (c == 5) {
             std::cout << "\n--- TRẢ PHÒNG & THANH LÝ HỢP ĐỒNG SỚM ---\n";
             std::string rentId = inputNonEmpty("Nhập mã hợp đồng cần thanh lý: ");
-            Date actualEnd = inputValidDate("Ngày trả phòng (dd/mm/yyyy, Enter để dùng 05/11/2026): ", Date(5, 11, 2026));
-            if (rentManager->terminateRent(rentId, actualEnd)) {
+
+            // Tìm hợp đồng trước để kiểm tra tồn tại, trạng thái, và lấy startDate
+            Rent* rent = rentManager->findById(rentId);
+            if (rent == nullptr) {
+                std::cout << "[Lỗi] Không tìm thấy hợp đồng: " << rentId << "\n";
+                pauseScreen();
+                continue;
+            }
+            if (!rent->isActive()) {
+                std::cout << "[Cảnh báo] Hợp đồng " << rentId << " đã không còn hiệu lực!\n";
+                pauseScreen();
+                continue;
+            }
+
+            Date minDate = rent->getStartDate();
+            Date sysDate = Date::now();
+            Date maxDate = (sysDate < minDate) ? minDate : sysDate;
+
+            std::string datePrompt = "Ngày kết thúc thuê (dd/mm/yyyy, từ " + minDate.toString() + 
+                                        " đến " + maxDate.toString() + 
+                                        ", Enter để dùng " + maxDate.toString() + "): ";
+            Date actualEnd = inputDateInRange(datePrompt, minDate, maxDate, maxDate);
+            
+            if (rentManager->terminateRent(rent, actualEnd)) {
                 rentManager->saveToFile();
                 roomManage->saveToFile();
                 studentManage->saveToFile();
@@ -881,14 +948,14 @@ void DormManager::handleContractManagement() {
                 rentManager->saveToFile();
             }
         } else if (c == 6) {
-            Date d = inputValidDate("Nhập mốc ngày hiện tại để kiểm tra (dd/mm/yyyy, Enter để dùng 05/11/2026): ", Date(5, 11, 2026));
+            Date d = Date::now();
             int days = inputInt("Số ngày cảnh báo trước (Enter hoặc <=0 để dùng 30 ngày): ");
             if (days <= 0) days = 30;
-            auto expiring = rentManager->findExpiringRents(d, days);
+            auto expiring = rentManager->findExpiringRents(d, days); //Tìm hợp đồng tính từ hôm nay đến ngày hết hạn trong vòng 30 ngyaf
             std::cout << "\n=== HỢP ĐỒNG SẮP HẾT HẠN (TRONG VÒNG " << days << " NGÀY TÍNH TỪ " << d.toString() << ") ===\n";
             TablePrinter::printRents(expiring);
         } else if (c == 7) {
-            Date d = inputValidDate("Nhập mốc ngày kiểm tra quá hạn (dd/mm/yyyy, Enter để dùng 05/11/2026): ", Date(5, 11, 2026));
+            Date d = Date::now();
             int count = rentManager->checkAndExpireRents(d);
             std::cout << "Tổng số hợp đồng đã quá hạn được giải phóng: " << count << "\n";
             if (count > 0) {
@@ -915,7 +982,10 @@ void DormManager::handleRevenueManagement() {
         if (c == 0) break;
 
         if (c == 1) {
-            std::string my = inputNonEmpty("Nhập tháng/năm báo cáo (ví dụ: 11/2026): ");
+            Date today = Date::now();
+            std::string my = std::to_string(today.getMonth()) + "/" +
+                 std::to_string(today.getYear());
+            
             double defElec = inputDouble("Ước tính chỉ số điện trung bình mỗi phòng (kWh, mặc định 50): ");
             if (defElec < 0) defElec = 50.0;
             double defWater = inputDouble("Ước tính chỉ số nước trung bình mỗi phòng (m³, mặc định 5): ");
@@ -927,7 +997,10 @@ void DormManager::handleRevenueManagement() {
             if (r == nullptr) {
                 std::cout << "[Lỗi] Không tìm thấy phòng: " << rId << "\n";
             } else {
-                std::string my = inputNonEmpty("Nhập tháng/năm (ví dụ: 11/2026): ");
+                Date today = Date::now();
+                std::string my = std::to_string(today.getMonth()) + "/" +
+                    std::to_string(today.getYear());
+                
                 double elec = inputDouble("Nhập chỉ số điện tiêu thụ của phòng trong tháng (kWh): ");
                 double water = inputDouble("Nhập chỉ số nước tiêu thụ của phòng trong tháng (m³): ");
                 roomManage->printSpecificRoomRevenue(rId, my, elec, water);
@@ -938,9 +1011,14 @@ void DormManager::handleRevenueManagement() {
             if (r == nullptr) {
                 std::cout << "[Lỗi] Không tìm thấy phòng: " << rId << "\n";
             } else {
-                double elec = inputDouble("Nhập số điện tiêu thụ trong tháng (kWh): ");
-                double water = inputDouble("Nhập số nước tiêu thụ trong tháng (m³): ");
-                roomManage->printRoomBill(rId, elec, water);
+                if (static_cast<int>(r->getActiveRent().size()) == 0) {
+                    std::cout <<"[Lỗi] Phòng hiện chưa có người ở";
+                }
+                else {
+                    double elec = inputDouble("Nhập số điện tiêu thụ trong tháng (kWh): ");
+                    double water = inputDouble("Nhập số nước tiêu thụ trong tháng (m³): ");
+                    roomManage->printRoomBill(rId, elec, water);
+                }
             }
         }
         pauseScreen();
@@ -967,7 +1045,9 @@ void DormManager::handleReportManagement() {
         } else if (c == 2) {
             TablePrinter::printDetailedMonthlyRevenueReport(rentManager->getAll(), roomManage->getAll());
         } else if (c == 3) {
-            std::string my = inputNonEmpty("Nhập tháng/năm báo cáo (ví dụ: 11/2026): ");
+            Date today = Date::now();
+            std::string my = std::to_string(today.getMonth()) + "/" +
+                 std::to_string(today.getYear());
             roomManage->printMonthlyRevenueReport(my);
         }
         pauseScreen();
@@ -1055,14 +1135,25 @@ void DormManager::handleAccountManagement() {
                     owner = "ADMIN";
                     std::cout << "  -> Mặc định mã liên kết Quản trị viên: ADMIN\n";
                 } else {
-                    Staff* st = staffManager->findById(inputOwner);
-                    if (st != nullptr) {
-                        owner = inputOwner;
-                        std::cout << "  -> Gắn quyền Admin cho cán bộ: " << st->getFullName()
-                                  << " (" << st->getDepartment() << ")\n";
-                    } else {
-                        owner = inputOwner;
-                        std::cout << "  -> Thiết lập mã liên kết quản trị: " << owner << "\n";
+                    while (true) {
+                        Staff* st = staffManager->findById(inputOwner);
+                        if (st != nullptr) {
+                            Account* existAcc = accountManager->findByOwnerId(inputOwner);
+                            if (existAcc != nullptr) {
+                                std::cout << "[Lỗi] Cán bộ '" << st->getFullName() << "' (" << owner
+                                        << ") đã có tài khoản liên kết '" << existAcc->getUsername() << "'!\n";
+                                inputOwner = inputNonEmpty("Vui lòng nhập Mã cán bộ khác: ");
+                                continue;
+                            }
+                            owner = inputOwner;
+                            std::cout << "  -> Gắn quyền Admin cho cán bộ: " << st->getFullName()
+                                    << " (" << st->getDepartment() << ")\n";
+                            break;
+                        } else {
+                            std::cout << "[Lỗi] Không tìm thấy cán bộ có mã '" << owner << "' trong hệ thống!\n";
+                            inputOwner = inputNonEmpty("Vui lòng nhập lại Mã cán bộ: ");
+                            continue;
+                        }
                     }
                 }
             }
@@ -1096,7 +1187,26 @@ void DormManager::handleChangePassword() {
     if (!currentAccount->verifyPassword(oldPass)) {
         std::cout << "[Lỗi] Mật khẩu hiện tại không chính xác!\n";
     } else {
-        std::string newPass = inputString("Nhập mật khẩu mới: ");
+        std::string newPass;
+        while (true) {
+            newPass = inputString("Nhập mật khẩu mới: ");
+            bool isAlphanumeric = true;
+            for (unsigned char ch : newPass) {
+                if (!std::isalnum(ch)) {
+                    isAlphanumeric = false;
+                    break;
+                }
+            }
+            if (newPass.length() < 3 || !isAlphanumeric) {
+                std::cout << "[Lỗi] Mật khẩu phải có ít nhất 3 ký tự và chỉ gồm chữ cái, chữ số!\n";
+                continue;
+            }
+            if (newPass == oldPass) {
+                std::cout << "[Lỗi] Mật khẩu hiện tại trùng mật khẩu cũ!\n";
+                continue;
+            }
+            break;
+        }
         std::string confirm = inputString("Xác nhận mật khẩu mới: ");
         if (newPass != confirm) {
             std::cout << "[Lỗi] Mật khẩu xác nhận không trùng khớp!\n";

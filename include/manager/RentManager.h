@@ -29,7 +29,7 @@ public:
     // Nghiệp vụ vòng đời hợp đồng
     Rent* createRent(const std::string& rentId, Student* student, Room* room,
                      Period period, const Date& startDate, double fee);
-    bool terminateRent(const std::string& rentId, const Date& actualEndDate);
+    bool terminateRent(Rent* rent, const Date& actualEndDate);
     bool extendRent(const std::string& rentId, int additionalMonths);
     bool transferRoom(const std::string& studentId, const std::string& newRoomId, RoomManager& roomMgr);
 

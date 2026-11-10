@@ -43,6 +43,7 @@ private:
     static double inputDouble(const std::string& prompt);
     static std::string inputNonEmpty(const std::string& prompt);
     static Date inputValidDate(const std::string& prompt, const Date& defaultDate = Date(5, 11, 2026));
+    static Date inputDateInRange(const std::string& prompt, const Date& minDate, const Date& maxDate, const Date& defaultDate);
     static std::string inputValidPhone(const std::string& prompt);
     static std::string inputValidEmail(const std::string& prompt);
     static std::string inputValidClassName(const std::string& prompt);

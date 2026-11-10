@@ -72,18 +72,18 @@ void TablePrinter::printStudents(const std::vector<Student*>& list) {
         std::cout << "(Không có sinh viên nào)\n";
         return;
     }
-    std::cout << "╔════════╦══════════════════════╦════════╦════════╦═════════════╦═══════╦════════════════════════╦════════════╦═════════════════════════╦════════╗\n";
+    std::cout << "╔════════╦══════════════════════╦════════╦════════╦═════════════╦═══════╦════════════════════════════════════╦════════════╦═════════════════════════╦════════╗\n";
     std::cout << "║ " << StringUtils::padRight("MÃ SV", 6)
               << " ║ " << StringUtils::padRight("HỌ VÀ TÊN", 20)
               << " ║ " << StringUtils::padRight("GIỚI", 6)
               << " ║ " << StringUtils::padRight("NĂM", 6)
               << " ║ " << StringUtils::padRight("LỚP", 11)
               << " ║ " << StringUtils::padRight("KHÓA", 5)
-              << " ║ " << StringUtils::padRight("KHOA", 22)
+              << " ║ " << StringUtils::padRight("KHOA", 34)
               << " ║ " << StringUtils::padRight("SĐT", 10)
               << " ║ " << StringUtils::padRight("EMAIL", 23)
               << " ║ " << StringUtils::padRight("PHÒNG", 6) << " ║\n";
-    std::cout << "╠════════╬══════════════════════╬════════╬════════╬═════════════╬═══════╬════════════════════════╬════════════╬═════════════════════════╬════════╣\n";
+    std::cout << "╠════════╬══════════════════════╬════════╬════════╬═════════════╬═══════╬════════════════════════════════════╬════════════╬═════════════════════════╬════════╣\n";
     for (const Student* s : list) {
         if (s == nullptr) continue;
         std::string genderStr = (s->getGender() == Gender::MALE) ? "Nam" : "Nu";
@@ -94,7 +94,7 @@ void TablePrinter::printStudents(const std::vector<Student*>& list) {
         std::string classSub = s->getClass();
         if (StringUtils::utf8Width(classSub) > 11) classSub = classSub.substr(0, 11);
         std::string facSub = s->getFaculty();
-        if (StringUtils::utf8Width(facSub) > 22) facSub = facSub.substr(0, 19) + "...";
+        if (StringUtils::utf8Width(facSub) > 34) facSub = facSub.substr(0, 31) + "...";
         std::string emSub = s->getEmail();
         if (StringUtils::utf8Width(emSub) > 23) emSub = emSub.substr(0, 20) + "...";
 
@@ -104,13 +104,13 @@ void TablePrinter::printStudents(const std::vector<Student*>& list) {
                   << " ║ " << StringUtils::padRight(s->getBirthYear(), 6)
                   << " ║ " << StringUtils::padRight(classSub, 11)
                   << " ║ " << StringUtils::padRight(s->getCohort(), 5)
-                  << " ║ " << StringUtils::padRight(facSub, 22)
+                  << " ║ " << StringUtils::padRight(facSub, 34)
                   << " ║ " << StringUtils::padRight(s->getPhone(), 10)
                   << " ║ " << StringUtils::padRight(emSub, 23)
                   << " ║ " << StringUtils::padRight(roomStr, 6)
                   << " ║\n";
     }
-    std::cout << "╚════════╩══════════════════════╩════════╩════════╩═════════════╩═══════╩════════════════════════╩════════════╩═════════════════════════╩════════╝\n";
+    std::cout << "╚════════╩══════════════════════╩════════╩════════╩═════════════╩═══════╩════════════════════════════════════╩════════════╩═════════════════════════╩════════╝\n";
     std::cout << ">> TỔNG SỐ SINH VIÊN: " << list.size() << " sinh viên\n";
 }
 
@@ -299,28 +299,25 @@ void TablePrinter::printBrokenDevices(const std::string& roomId, const std::vect
         std::cout << "  (Tất cả thiết bị phòng " << roomId << " đều hoạt động tốt, không có thiết bị hỏng)\n";
         return;
     }
-    std::cout << "  ╔════════╦══════════════════════╦════════════════════════════════╦════════════╦════════════════╗\n";
-    std::cout << "  ║ " << StringUtils::padRight("MÃ TB", 6)
-              << " ║ " << StringUtils::padRight("TÊN THIẾT BỊ", 20)
-              << " ║ " << StringUtils::padRight("MÔ TẢ HƯ HỎNG", 30)
-              << " ║ " << StringUtils::padRight("NGÀY BÁO", 10)
-              << " ║ " << StringUtils::padRight("TRẠNG THÁI", 14) << " ║\n";
-    std::cout << "  ╠════════╬══════════════════════╬════════════════════════════════╬════════════╬════════════════╣\n";
+    std::cout << "  ╔══════════╦══════════════════════════╦════════════════════════════════════════╦════════════════╗\n";
+    std::cout << "  ║ " << StringUtils::padRight("MÃ TB", 8)
+              << " ║ " << StringUtils::padRight("TÊN THIẾT BỊ", 24)
+              << " ║ " << StringUtils::padRight("MÔ TẢ HƯ HỎNG", 38)
+              << " ║ " << StringUtils::padRight("NGÀY BÁO", 14) << " ║\n";
+    std::cout << "  ╠══════════╬══════════════════════════╬════════════════════════════════════════╬════════════════╣\n";
     for (const auto& dev : list) {
-        std::string st = dev.isFixed() ? "Đã sửa xong" : "Đang hỏng";
         std::string nameSub = dev.getDeviceName();
-        if (StringUtils::utf8Width(nameSub) > 20) nameSub = nameSub.substr(0, 17) + "...";
+        if (StringUtils::utf8Width(nameSub) > 24) nameSub = nameSub.substr(0, 21) + "...";
         std::string descSub = dev.getDescription();
-        if (StringUtils::utf8Width(descSub) > 30) descSub = descSub.substr(0, 27) + "...";
+        if (StringUtils::utf8Width(descSub) > 38) descSub = descSub.substr(0, 35) + "...";
 
-        std::cout << "  ║ " << StringUtils::padRight(dev.getDeviceId(), 6)
-                  << " ║ " << StringUtils::padRight(nameSub, 20)
-                  << " ║ " << StringUtils::padRight(descSub, 30)
-                  << " ║ " << StringUtils::padRight(dev.getReportDate().toString(), 10)
-                  << " ║ " << StringUtils::padRight(st, 14)
+        std::cout << "  ║ " << StringUtils::padRight(dev.getDeviceId(), 8)
+                  << " ║ " << StringUtils::padRight(nameSub, 24)
+                  << " ║ " << StringUtils::padRight(descSub, 38)
+                  << " ║ " << StringUtils::padRight(dev.getReportDate().toString(), 14)
                   << " ║\n";
     }
-    std::cout << "  ╚════════╩══════════════════════╩════════════════════════════════╩════════════╩════════════════╝\n";
+    std::cout << "  ╚══════════╩══════════════════════════╩════════════════════════════════════════╩════════════════╝\n";
 }
 
 // Bảng doanh thu toàn KTX: Tổng độ rộng = 119 ký tự

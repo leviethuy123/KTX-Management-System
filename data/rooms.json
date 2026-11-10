@@ -6,7 +6,6 @@
         "description": "Hu",
         "deviceId": "1",
         "deviceName": "Den",
-        "isRepaired": false,
         "reportDate": "01/01/2030"
       }
     ],
@@ -15,7 +14,7 @@
     "maxStudents": 8,
     "roomId": "P101",
     "roomType": "STANDARD",
-    "status": "EMPTY"
+    "status": "OCCUPIED"
   },
   {
     "basePrice": 400000.0,
@@ -24,7 +23,6 @@
         "description": "Kêu to và quay chậm",
         "deviceId": "TB01",
         "deviceName": "Quạt trần",
-        "isRepaired": true,
         "reportDate": "15/10/2026"
       }
     ],

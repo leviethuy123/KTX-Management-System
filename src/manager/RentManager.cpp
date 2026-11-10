@@ -147,17 +147,8 @@ Rent* RentManager::createRent(const std::string& rentId, Student* student, Room*
     return newRent;
 }
 
-bool RentManager::terminateRent(const std::string& rentId, const Date& actualEndDate) {
-    Rent* r = findById(rentId);
-    if (r == nullptr) {
-        std::cout << "[Lỗi] Không tìm thấy hợp đồng: " << rentId << "\n";
-        return false;
-    }
+bool RentManager::terminateRent(Rent* r, const Date& actualEndDate) {
 
-    if (!r->isActive()) {
-        std::cout << "[Cảnh báo] Hợp đồng " << rentId << " vốn đã không còn hiệu lực!\n";
-        return false;
-    }
 
     r->terminateEarly(actualEndDate);
 
@@ -168,7 +159,7 @@ bool RentManager::terminateRent(const std::string& rentId, const Date& actualEnd
         r->getTenant()->setRent(nullptr);
     }
 
-    std::cout << "[Thành công] Đã thanh lý sớm hợp đồng " << rentId << " vào ngày "
+    std::cout << "[Thành công] Đã thanh lý sớm hợp đồng " << r->getId() << " vào ngày "
               << actualEndDate.toString() << "\n";
     return true;
 }
@@ -262,7 +253,7 @@ bool RentManager::extendRent(const std::string& rentId, int additionalMonths) {
     try {
         r->setRentalPeriod(EnumHelper::intToPeriod(totalMonths));
     } catch (...) {
-        r->setRentalPeriod(static_cast<Period>(totalMonths));
+        r->setRentalPeriod(static_cast<Period>(totalMonths)); //ép kiểu Period nếu gặp không hợp lệ
     }
 
     std::cout << "[Thành công] Đã gia hạn hợp đồng " << rentId << " thêm " << additionalMonths
@@ -273,6 +264,7 @@ bool RentManager::extendRent(const std::string& rentId, int additionalMonths) {
 bool RentManager::transferRoom(const std::string& studentId, const std::string& newRoomId, RoomManager& roomMgr) {
     auto studentRents = findByStudent(studentId);
     Rent* activeRent = nullptr;
+    //Xem có hợp đồng không
     for (Rent* r : studentRents) {
         if (r != nullptr && r->isActive()) {
             activeRent = r;
@@ -285,28 +277,33 @@ bool RentManager::transferRoom(const std::string& studentId, const std::string& 
         return false;
     }
 
+    //Có trùng phòng không
     Room* oldRoom = activeRent->getRoom();
     if (oldRoom != nullptr && oldRoom->getId() == newRoomId) {
         std::cout << "[Lỗi] Sinh viên hiện đang ở tại phòng " << newRoomId << " rồi!\n";
         return false;
     }
 
+    //Phòng mới có tồn tại không
     Room* newRoom = roomMgr.findById(newRoomId);
     if (newRoom == nullptr) {
         std::cout << "[Lỗi] Không tìm thấy phòng đích: " << newRoomId << "\n";
         return false;
     }
 
+    //Phòng mới full chưa
     if (newRoom->isFull()) {
         std::cout << "[Lỗi] Phòng " << newRoomId << " đã đầy chỗ!\n";
         return false;
     }
 
+    //Có bảo trì không
     if (newRoom->getStatus() == RoomStatus::MAINTENANCE) {
         std::cout << "[Lỗi] Phòng " << newRoomId << " đang trong quá trình bảo trì!\n";
         return false;
     }
 
+    //Check giới tính
     Student* stu = activeRent->getTenant();
     if (stu != nullptr && !newRoom->isEmpty()) {
         for (const Rent* r : newRoom->getActiveRent()) {
@@ -320,9 +317,12 @@ bool RentManager::transferRoom(const std::string& studentId, const std::string& 
         }
     }
 
+    //Xóa phòng cũ
     if (oldRoom != nullptr) {
         oldRoom->removeRent(activeRent);
     }
+    
+    //Đặt phòng mới
     activeRent->setRoom(newRoom);
     newRoom->addRent(activeRent);
     activeRent->setRentFee(newRoom->getBasePrice());

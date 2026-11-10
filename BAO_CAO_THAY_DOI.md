@@ -108,3 +108,39 @@ Thay thế dòng chữ sơ sài cũ bằng báo cáo 3 tầng phân tích chuyê
    - Thẻ Phiếu báo tiền phòng (`printRoomBill`): Độ rộng 76 ký tự trên mọi dòng.
    - Báo cáo doanh thu chi tiết (`printDetailedMonthlyRevenueReport`): Độ rộng 104, 82, 78 ký tự trên các phân đoạn, khớp chính xác từng ký tự biên `║`.
 3. **Tính toàn vẹn dữ liệu:** Toàn bộ dữ liệu trong thư mục `data/` được giữ nguyên vẹn, không có bất kỳ xáo trộn dữ liệu gốc nào.
+
+
+> **Thời điểm cập nhật:** 10/11/2026 (ICT)  
+
+## 📝 CẬP NHẬT THAY ĐỔI SO VỚI COMMIT GẦN NHẤT
+
+> **Mốc đối chiếu:** `d0930fe` — `Sua loi trong Intinput 1av -> 1` (06/11/2026).  
+> Nội dung dưới đây ghi nhận phần chênh lệch hiện có trong working tree so với commit này. Các thay đổi mã nguồn và dữ liệu đã staged nhưng chưa commit; phần cập nhật báo cáo này chưa staged.
+
+### 1. Nghiệp vụ và kiểm tra dữ liệu
+
+- **Ngày tháng theo ngày hệ thống:** Bổ sung `Date::now()` và các hàm truy xuất ngày hiện tại. Ngày báo hỏng thiết bị, ngày bắt đầu/kết thúc hợp đồng được nhập trong khoảng hợp lệ; các màn hình cảnh báo hợp đồng và báo cáo doanh thu mặc định theo tháng/năm hiện tại.
+- **Quản lý hợp đồng:** Kiểm tra hợp đồng tồn tại và còn hiệu lực trước khi thanh lý; ngày thanh lý không được trước ngày bắt đầu hoặc sau ngày hiện tại. Hàm thanh lý nhận đối tượng hợp đồng đã tìm được thay vì tự tìm theo mã.
+- **Quản lý phòng và thiết bị hỏng:** Bổ sung xem chi tiết phòng; chỉ lập hóa đơn phòng khi có người ở. Khi thiết bị được sửa, gỡ thiết bị khỏi danh sách hỏng thay vì lưu trạng thái “đã sửa”.
+- **Sinh viên và khoa:** Giới hạn năm sinh nhập mới trong khoảng 2000–2008; tự suy ra khoa từ mã lớp. Danh mục khoa được cập nhật còn 8 khoa, đồng thời bỏ danh mục lớp đăng ký động `data/classes.json`.
+- **Tài khoản:** Bổ sung kiểm tra cán bộ liên kết và tài khoản owner đã tồn tại khi cấp tài khoản ADMIN; mật khẩu mới khi đổi phải có ít nhất 3 ký tự chữ/số và không trùng mật khẩu hiện tại.
+- **Hiển thị:** Mở rộng cột khoa trong bảng sinh viên và điều chỉnh bảng thiết bị hỏng để phù hợp dữ liệu hiển thị mới.
+
+### 2. File có thay đổi so với commit đối chiếu
+
+| Tệp | Nội dung thay đổi |
+| :--- | :--- |
+| `include/Common.h`, `src/Common.cpp` | Ngày hiện tại; cập nhật 8 khoa và bổ sung suy ra khoa từ mã lớp; bỏ API quản lý danh mục lớp. |
+| `include/manager/DormManager.h`, `src/manager/DormManager.cpp` | Nhập ngày theo khoảng; cập nhật luồng quản lý phòng, thiết bị, sinh viên, hợp đồng, doanh thu và tài khoản. |
+| `include/manager/RentManager.h`, `src/manager/RentManager.cpp` | Đổi API thanh lý để nhận hợp đồng đã tra cứu; bổ sung chú thích các bước chuyển phòng. |
+| `include/Room.h`, `src/Room.cpp` | Loại bỏ cờ trạng thái sửa chữa; thiết bị hỏng được gỡ khỏi danh sách khi xử lý xong. |
+| `src/TablePrinter.cpp` | Điều chỉnh độ rộng cột khoa và bảng thiết bị hỏng. |
+| `src/manager/RoomManager.cpp` | Bổ sung chú thích cho trường hợp dự phòng tính tiền thuê. |
+| `data/accounts.json` | Cập nhật dữ liệu tài khoản mẫu (xóa `ACC002`, thêm `ACC006`). |
+| `data/classes.json` | Xóa danh mục lớp đăng ký tĩnh. |
+| `data/rooms.json` | Cập nhật trạng thái phòng và dữ liệu thiết bị hỏng mẫu. |
+
+### 3. Kiểm thử
+
+- Chưa chạy build hoặc test cho phần thay đổi này.
+- `git diff --check` phát hiện một số khoảng trắng thừa ở cuối dòng trong các thay đổi C++; cần dọn trước khi commit.

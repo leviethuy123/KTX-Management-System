@@ -17,24 +17,21 @@ private:
     std::string deviceName;    // Tên thiết bị (ví dụ: Quạt trần, Bàn học, Bóng đèn, Điều hòa,...)
     std::string description;   // Mô tả hư hỏng / tình trạng (ví dụ: Gãy chân, Không quay, Chập cháy)
     Date reportDate;           // Ngày ghi nhận báo hỏng
-    bool isRepaired;           // Trạng thái: false = Đang hỏng, true = Đã sửa chữa
 
 public:
     BrokenDevice();
     BrokenDevice(const std::string& id, const std::string& name,
-                 const std::string& desc, const Date& date = Date(), bool repaired = false);
+                 const std::string& desc, const Date& date = Date());
 
     std::string getDeviceId() const;
     std::string getDeviceName() const;
     std::string getDescription() const;
     Date getReportDate() const;
-    bool isFixed() const;
 
     void setDeviceId(const std::string& id);
     void setDeviceName(const std::string& name);
     void setDescription(const std::string& desc);
     void setReportDate(const Date& date);
-    void setFixed(bool fixed);
 
     void print() const;
     nlohmann::json toJson() const;
@@ -80,7 +77,6 @@ public:
     const std::vector<BrokenDevice>& getBrokenDevices() const;
     void addBrokenDevice(const BrokenDevice& dev);
     bool removeBrokenDevice(const std::string& deviceId);
-    bool fixBrokenDevice(const std::string& deviceId);
     int countUnfixedDevices() const;
     bool hasBrokenDevices() const;
     void printBrokenDevices() const;

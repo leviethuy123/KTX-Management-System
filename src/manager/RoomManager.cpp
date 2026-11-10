@@ -237,7 +237,7 @@ RoomRevenueRow RoomManager::calculateRoomMonthlyRevenue(const std::string& roomI
             rentTotal += rent->getRentFee();
         }
     }
-    if (rentTotal == 0.0 && row.occupants > 0) {
+    if (rentTotal == 0.0 && row.occupants > 0) { //phòng thủ nếu phí thuê là 0
         rentTotal = row.basePrice * row.occupants;
     }
     row.rentFeeTotal = rentTotal;
