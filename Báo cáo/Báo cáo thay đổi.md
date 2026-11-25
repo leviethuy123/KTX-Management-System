@@ -1,112 +1,176 @@
-# 📋 BÁO CÁO THAY ĐỔI
+# 📋 BÁO CÁO THAY ĐỔI & TIẾN ĐỘ DỰ ÁN
 
 > **Dự án:** Quản lý Ký túc xá Sinh viên (Hệ thống PBL2 - C++17 OOP)  
-> **Thời điểm cập nhật:** 05/11/2026 (ICT)  
+> **Thời điểm cập nhật:** 24/11/2026 (ICT)  
+> **Trạng thái:** Hoàn thành toàn diện các yêu cầu nâng cấp & Kiểm thử 100% đạt chuẩn
 
 ---
 
-## 🎯 1. TỔNG QUAN CÁC MỤC TIÊU NÂNG CẤP HỆ THỐNG
-Trong phiên làm việc toàn diện này, hệ thống đã được tái cấu trúc, nâng cấp giao diện và hoàn thiện nghiệp vụ chuyên sâu bám sát các yêu cầu thực tế:
-1. **Tách biệt nghiệp vụ Phân bổ & Xếp chỗ** (`handleAllocationManagement`) khỏi **Quản lý Hợp đồng thuê** (`handleContractManagement`): Rõ ràng về mặt quy trình quản trị thực tế của KTX.
-2. **Bẫy lỗi dữ liệu tức thì (`try-catch`)**: Không cho phép ngầm định giá trị mặc định khi người dùng nhập sai. Mọi dữ liệu không hợp lệ đều được cảnh báo chi tiết và yêu cầu người dùng nhập lại ngay lập tức.
-3. **Đóng khung giao diện hộp nét đôi (`╔══╗`, `║`, `╚══╝`) & Xóa màn hình (`clearScreen`)**: Toàn bộ 11 menu lựa chọn và các bảng biểu hiển thị đều được đồng bộ khung viền đôi chuyên nghiệp, xóa sạch màn hình khi chuyển menu.
-4. **Chuẩn hóa canh chỉnh tiếng Việt UTF-8 bằng hàm tính Offset (`namespace StringUtils`)**:
-   - Khắc phục triệt để hiện tượng xô lệch đường viền phải (`║`) do các hàm căn lề chuẩn C++ (`std::setw`) đếm theo **byte** thay vì **độ rộng cột hiển thị** của ký tự tiếng Việt có dấu.
-   - Cung cấp các hàm: `utf8Width()`, `utf8Offset()`, `padRight()`, `padLeft()`, `padCenter()`, `repeat()`, `formatMoney()`.
-5. **Nâng cấp Báo cáo Doanh thu hàng tháng chi tiết đa chiều (`printDetailedMonthlyRevenueReport`)**: Thay thế báo cáo 1 dòng sơ sài bằng báo cáo 3 phần toàn diện:
-   - *Phần 1:* Bảng danh sách chi tiết từng hợp đồng đang hiệu lực phát sinh doanh thu.
-   - *Phần 2:* Cơ cấu doanh thu theo loại phòng (STANDARD vs VIP, số phòng, số sinh viên, doanh thu, tỷ trọng %).
-   - *Phần 3:* Bảng thẻ tóm tắt các chỉ số tài chính tổng hợp toàn KTX (doanh thu thực thu, dự phóng cả năm, doanh thu bình quân/SV, doanh thu bình quân/phòng).
-6. **Tính toán doanh thu chi tiết từng tháng cho từng phòng cụ thể và toàn KTX**: Tách bạch minh bạch tiền thuê phòng, phí dịch vụ VIP, tiền điện (3.000đ/kWh), tiền nước (10.000đ/m³), chia đều tiền tiện ích cho sinh viên cùng phòng.
-7. **Đồng bộ hóa 10 Khoa chuẩn Đại học Bách Khoa** (`Faculty`) qua menu chọn số 1..10, loại bỏ hoàn toàn lỗi gõ tự do sai chính tả.
-8. **Kiểm tra tính hợp lệ của lớp sinh hoạt & Tự động trích xuất Khóa sinh viên** (`ClassValidator`): Tự động phân tích năm khóa học (K21, K22, K23) từ 2 ký tự đầu của `className` và lưu trữ danh mục lớp vào `data/classes.json`.
-9. **Xây dựng `Makefile` chuẩn quốc tế**: Hỗ trợ biên dịch tăng tiến (`build/*.o`), tự động theo dõi file header (`-MMD -MP`), tối ưu hóa tốc độ thực thi (`-O2`), hỗ trợ gỡ lỗi (`make DEBUG=1`) và tương thích đa nền tảng (Windows CMD/PowerShell & Linux/macOS).
-10. **Bẫy lỗi xác thực mã liên kết tài khoản người dùng (`ownerId`)**: Rà soát tức thì tại thời điểm cấp tài khoản: kiểm tra bắt buộc mã sinh viên/cán bộ phải tồn tại trong hệ thống, kiểm tra chống cấp trùng tài khoản cho cùng một người, ngăn chặn triệt để tình trạng tài khoản mồ côi (orphan account).
+## 🎯 1. TỔNG QUAN CÁC MỤC TIÊU NÂNG CẤP HỆ THỐNG (PHIÊN 24/11/2026)
+
+Trong đợt nâng cấp toàn diện này, hệ thống đã hoàn thiện các yêu cầu kỹ thuật cốt lõi của đề tài PBL2: thay thế cấu trúc dữ liệu thư viện có sẵn bằng cấu trúc mảng động tự định nghĩa, mở rộng tính Đa hình (Polymorphism) trong lập trình hướng đối tượng, tối ưu hóa giao diện tương tác người dùng và bổ sung các chức năng nghiệp vụ quản lý phòng ở chuyên sâu:
+
+1. **Tự thiết kế & Triển khai cấu trúc dữ liệu `Vector<T>` thay thế hoàn toàn `std::vector`:**
+   - Thay vì sử dụng thư viện STL `std::vector`, đồ án đã tự xây dựng class mẫu (class template) `Vector<T>` quản lý mảng động với cấp phát bộ nhớ động (`new[]`, `delete[]`), cơ chế tự động nhân đôi sức chứa (`reserve`, `capacity`), các phương thức thêm/xóa/truy cập (`push_back`, `pop_back`, `erase`, `clear`, `operator[]`, `at`), bẫy ngoại lệ `std::out_of_range`, hỗ trợ cơ chế dịch chuyển `std::move` và con trỏ duyệt `begin()`, `end()` tương thích hoàn hảo với vòng lặp `range-for` và thuật toán sắp xếp `std::sort`.
+   - Lược bỏ hàm tạo `initializer_list` dư thừa theo đúng yêu cầu đề tài, đảm bảo tính tinh gọn, an toàn và tối ưu bộ nhớ.
+   - Chuyển đổi toàn bộ các lớp quản lý (`Manager<T>`, `RoomManager`, `StudentManager`, `StaffManager`, `RentManager`, `AccountManager`, `DormManager`) sang sử dụng `Vector<T>`.
+
+2. **Gộp module `TablePrinter` vào `Common.h` và `Common.cpp`:**
+   - Xóa bỏ 2 tệp riêng biệt `include/TablePrinter.h` và `src/TablePrinter.cpp`.
+   - Khai báo lớp `TablePrinter` và namespace `StringUtils` được tích hợp vào `include/Common.h`.
+   - Toàn bộ phần cài đặt của `TablePrinter` và `StringUtils` được chuyển vào `src/Common.cpp`.
+   - Không phụ thuộc vào `Makefile`, dự án có thể biên dịch trực tiếp và nhất quán bằng lệnh `g++`.
+
+3. **Mở rộng tính Đa hình (Polymorphism) với Quy định riêng của từng phòng:**
+   - Bổ sung phương thức thuần ảo `virtual std::string getRegulations() const = 0;` trong lớp trừu tượng `Room`.
+   - Cài đặt ghi đè (`override`) độc lập tại 2 lớp dẫn xuất:
+     - **StandardRoom:** *"Đóng cửa 23:00 - 05:00 | Không nấu ăn trong phòng | Trực nhật dọn vệ sinh hàng tuần | Giữ trật tự sau 22:00"*.
+     - **VipRoom:** *"Ra vào tự do 24/7 (thẻ từ) | Cho phép khu bếp riêng & thiết bị mini | Dịch vụ dọn phòng 2 lần/tuần | Bảo quản nội thất cao cấp"*.
+   - Quy định riêng được tự động xuất ra khi xem thông tin chi tiết phòng (`Room::print()`).
+
+4. **Thêm chức năng Tạo phòng mới (`handleCreateRoom`):**
+   - Bổ sung lựa chọn `[8] Thêm phòng mới vào hệ thống` trong Menu Quản lý phòng ở của Cán bộ / Admin.
+   - Cung cấp phương thức nghiệp vụ `createRoom(...)` trong `RoomManager`.
+   - Bẫy lỗi trùng lặp mã phòng, nhập loại phòng (Standard / VIP), tòa nhà, tầng, sức chứa, đơn giá cơ bản và phí dịch vụ phát sinh; tự động lưu trực tiếp vào cơ sở dữ liệu `data/rooms.json`.
+
+5. **Tối ưu hóa giao diện nhập liệu & Trực quan hóa thông tin trước khi nhập (Hạn chế tối đa lỗi người dùng):**
+   - **Nhập giới tính:** Hiển thị card lựa chọn trực quan `[1] Nam | [2] Nữ` trước khi nhập (`inputGender`).
+   - **Xếp phòng mới:**
+     - Tự động hiển thị danh sách các sinh viên đang chờ xếp phòng trước khi yêu cầu nhập mã sinh viên.
+     - Sau khi chọn sinh viên, hệ thống tự động lọc và hiển thị danh sách các phòng còn chỗ trống **phù hợp theo giới tính** của sinh viên đó trước khi yêu cầu nhập mã phòng.
+
+6. **Lược bỏ các hiển thị tự động dư thừa khi thêm sinh viên:**
+   - Gỡ bỏ 2 thông báo không cần thiết: `-> Tự động xác định Khóa...` và `-> Tự động xác định Khoa...` trong giao diện thêm mới sinh viên, giữ màn hình nhập liệu ngắn gọn, sạch sẽ.
+
+7. **Bổ sung tính năng Lọc đa tiêu chí trong Phân bổ & Xếp phòng (`handleFilterAllocation`):**
+   - Bổ sung lựa chọn `[6] Tìm kiếm & Lọc phòng xếp chỗ theo tiêu chí` trong Menu Phân bổ phòng, hỗ trợ:
+     - Lọc các phòng còn chỗ trống phù hợp cho Nam.
+     - Lọc các phòng còn chỗ trống phù hợp cho Nữ.
+     - Lọc phòng còn chỗ theo Loại phòng (Standard / VIP).
+     - Lọc phòng còn chỗ theo Tòa nhà (Khu A, Khu B, Khu VIP,...).
+     - Lọc danh sách sinh viên chưa có phòng theo từng Khoa trong 8 Khoa chuẩn của Trường Đại học Bách Khoa.
+
+8. **Chuẩn hóa & Sinh bộ dữ liệu mẫu lớn (`data/*.json`):**
+   - Mở rộng bộ dữ liệu JSON mô phỏng hoạt động thực tế đầy đủ: 20 phòng (10 Standard, 10 VIP), 50 sinh viên, 10 cán bộ quản lý & kế toán, 46 hợp đồng thuê phòng (đa dạng trạng thái ACTIVE, EXPIRED, TERMINATED) và 62 tài khoản đăng nhập phân quyền (Admin, Staff, Student).
 
 ---
 
-## 📊 2. BẢNG THỐNG KÊ CHI TIẾT CÁC FILE THAY ĐỔI
+## 📊 2. BẢNG THỐNG KÊ CHI TIẾT CÁC TỆP TIN THAY ĐỔI
 
-| STT | Tệp tin (File Path) | Trọng tâm nâng cấp kỹ thuật |
-| :---: | :--- | :--- |
-| **1** | `include/TablePrinter.h` | Khai báo `namespace StringUtils` (xử lý UTF-8 width, offset, padding, format tiền); khai báo báo cáo doanh thu chi tiết `printDetailedMonthlyRevenueReport`. |
-| **2** | `src/TablePrinter.cpp` | Cài đặt `StringUtils`; căn chỉnh lại độ rộng toàn bộ bảng (`printRevenueTable`, `printStudents`, `printRooms`, `printRents`, `printStaffs`, `printAccounts`, `printBrokenDevices`, `printRoomAllocationMap`, `printSingleRoomRevenue`); triển khai báo cáo 3 phần. |
-| **3** | `include/Common.h` | Ném ngoại lệ `std::invalid_argument` trong `EnumHelper`; Khai báo lớp `Faculty` (10 khoa chuẩn) và `ClassValidator`; Khai báo `Date::tryParse`. |
-| **4** | `src/Common.cpp` | Cài đặt `Faculty` (menu đóng khung viền đôi, ánh xạ 1..10), `ClassValidator` (tính khóa, rà soát lớp), `Date::tryParse`. |
-| **5** | `include/manager/DormManager.h` | Khai báo `clearScreen()`; 11 hàm nhập liệu bẫy lỗi an toàn (`inputGender`, `inputRole`, `inputPeriod`,...); tách 3 menu nghiệp vụ độc lập. |
-| **6** | `src/manager/DormManager.cpp` | Đóng khung nét đôi toàn bộ 11 menu; xóa màn hình linh hoạt; tích hợp `try-catch` lặp lại; gọi `TablePrinter::printDetailedMonthlyRevenueReport`. |
-| **7** | `include/manager/RentManager.h` | Khai báo bổ sung `transferRoom()` (chuyển phòng) và `extendRent()` (gia hạn hợp đồng). |
-| **8** | `src/manager/RentManager.cpp` | Cài đặt `transferRoom()` với đầy đủ kiểm tra ràng buộc (sức chứa, giới tính, trạng thái phòng, đồng bộ con trỏ hai chiều). |
-| **9** | `include/manager/RoomManager.h` | Khai báo `calculateRoomMonthlyRevenue`, in phiếu doanh thu và in bảng doanh thu toàn KTX. |
-| **10** | `src/manager/RoomManager.cpp` | Cài đặt tính doanh thu; chuẩn hóa khung nét đôi cho `printOccupancyReport()`, `printRoomBill()` và `printAvailableRoom()` bằng `StringUtils`. |
-| **11** | `src/Human.cpp` | Cập nhật hàm `Student::setClass()` để tự động kích hoạt tính lại khóa học (`cohort`) qua `ClassValidator::extractCohort()`. |
-| **12** | `src/Room.cpp` | Tinh chỉnh hiển thị và bẫy lỗi danh mục thiết bị hỏng. |
-| **13** | `Makefile` | **(Tệp mới)** Hệ thống build tự động: biên dịch tăng tiến, cờ `-O2`, cờ debug `-g`, theo dõi header `-MMD -MP`, hỗ trợ lệnh `clean`, `run`, `rebuild`, `help`. |
-| **14** | `CHUC_NANG_CAC_HAM.md` | Cập nhật tài liệu kỹ thuật chi tiết toàn bộ các hàm mới, bảng tra cứu và hướng dẫn luồng dữ liệu. |
-| **15** | `README.md` | Bổ sung hướng dẫn sử dụng Makefile và mô tả các chức năng nâng cấp mới. |
-| **16** | `.gitignore` | Bổ sung bỏ qua thư mục `build/`, file sơ đồ `*.drawio.xml` và thư mục kỹ năng nội bộ `.agent/`. |
-
----
-
-## 🔍 3. CHI TIẾT CÁC ĐIỂM SÁNG KỸ THUẬT NỔI BẬT
-
-### 🌟 3.1. Giải quyết triệt để lỗi lệch viền console tiếng Việt (`namespace StringUtils`)
-- **Nguyên nhân gốc rễ:** Mỗi ký tự tiếng Việt có dấu (ví dụ: `Ả, Ế, Ô, Đ, Ư, Ờ`) trong bảng mã UTF-8 chiếm từ 2 đến 3 bytes trên bộ nhớ, nhưng trên màn hình console monospace nó chỉ chiếm **đúng 1 cột hiển thị**. Khi dùng `std::setw(W)`, C++ trừ đi số bytes chứ không phải số cột, khiến các dòng chứa tiếng Việt bị hụt khoảng trắng, làm đường viền phải (`║`) bị thụt lùi nhấp nhô.
-- **Giải pháp xử lý:**
-  - `StringUtils::utf8Width(str)`: Duyệt qua các byte mở đầu UTF-8 (`(c & 0xC0) != 0x80`) để đếm chính xác số cột hiển thị.
-  - `StringUtils::utf8Offset(str)`: Tính độ chênh lệch: $\text{Offset} = \text{byte\_length} - \text{visual\_width}$.
-  - `StringUtils::padRight(str, visualWidth)`: Bổ sung khoảng trắng dựa trên `visualWidth - utf8Width(str)`, bảo đảm dòng in ra màn hình luôn thẳng tắp đến từng pixel.
-  - Áp dụng trên 100% các bảng biểu trong `TablePrinter.cpp` và `RoomManager.cpp`.
+| STT | Tệp tin (File Path) | Loại thay đổi | Trọng tâm kỹ thuật |
+| :---: | :--- | :---: | :--- |
+| **1** | `include/Common.h` | Cập nhật lớn | Cài đặt class template `Vector<T>` tự định nghĩa; Tích hợp khai báo `class TablePrinter` và `namespace StringUtils`; Đồng bộ 8 Khoa chuẩn `Faculty`. |
+| **2** | `src/Common.cpp` | Cập nhật lớn | Chuyển toàn bộ cài đặt `TablePrinter` và `StringUtils` sang; Cài đặt xử lý hiển thị bảng định dạng UTF-8, format tiền tệ và in sơ đồ phòng. |
+| **3** | `include/TablePrinter.h` | Đã xóa | Xóa file riêng lẻ theo yêu cầu gộp mã nguồn vào `Common.h`. |
+| **4** | `src/TablePrinter.cpp` | Đã xóa | Xóa file riêng lẻ theo yêu cầu gộp mã nguồn vào `Common.cpp`. |
+| **5** | `include/Room.h` | Cập nhật | Khai báo phương thức thuần ảo `virtual std::string getRegulations() const = 0;` trong `Room`; ghi đè `override` trong `StandardRoom` và `VipRoom`. |
+| **6** | `src/Room.cpp` | Cập nhật | Cài đặt `StandardRoom::getRegulations()` và `VipRoom::getRegulations()`; xuất quy định riêng trong `Room::print()`. |
+| **7** | `include/manager/RoomManager.h` | Cập nhật | Đổi toàn bộ sang `Vector<Room*>`; khai báo `createRoom(...)` và `findAvailableRoomByGender(...)`. |
+| **8** | `src/manager/RoomManager.cpp` | Cập nhật | Cài đặt `createRoom(...)` và `findAvailableRoomByGender(...)`; chuyển đổi các thao tác nội bộ sang `Vector<T>`. |
+| **9** | `include/manager/DormManager.h` | Cập nhật | Khai báo các hàm điều khiển mới: `handleCreateRoom()`, `handleFilterAllocation()`, `getUnassignedStudents()`. |
+| **10** | `src/manager/DormManager.cpp` | Cập nhật lớn | Cài đặt menu Tạo phòng [8]; Menu Lọc phân bổ [6]; Giao diện chọn giới tính card; Hiển thị danh sách trước khi nhập mã SV và mã phòng; Lược bỏ in thừa Khóa/Khoa. |
+| **11** | `include/manager/Manager.h` | Cập nhật | Chuyển mảng chứa nội bộ từ `std::vector<T*>` sang `Vector<T*>`. |
+| **12** | `include/manager/StudentManager.h` | Cập nhật | Chuyển kiểu dữ liệu trả về sang `Vector<Student*>`. |
+| **13** | `src/manager/StudentManager.cpp` | Cập nhật | Đồng bộ phương thức lọc và nạp dữ liệu với `Vector<Student*>`. |
+| **14** | `include/manager/StaffManager.h` | Cập nhật | Chuyển kiểu dữ liệu trả về sang `Vector<Staff*>`. |
+| **15** | `src/manager/StaffManager.cpp` | Cập nhật | Đồng bộ phương thức nạp và quản lý với `Vector<Staff*>`. |
+| **16** | `include/manager/RentManager.h` | Cập nhật | Chuyển danh sách hợp đồng sang `Vector<Rent*>`. |
+| **17** | `src/manager/RentManager.cpp` | Cập nhật | Đồng bộ nghiệp vụ tạo, chuyển, gia hạn và thanh lý hợp đồng với `Vector<Rent*>`. |
+| **18** | `include/manager/AccountManager.h` | Cập nhật | Bỏ `include <vector>`, sử dụng `Vector<Account*>`. |
+| **19** | `data/rooms.json` | Cập nhật dữ liệu | Lưu trữ 20 phòng (10 Standard, 10 VIP) với đầy đủ thông tin thiết bị hỏng thực tế. |
+| **20** | `data/students.json` | Cập nhật dữ liệu | Lưu trữ 50 sinh viên chuẩn hóa thông tin cá nhân, lớp học và khoa. |
+| **21** | `data/staffs.json` | Cập nhật dữ liệu | Lưu trữ 10 cán bộ phân công các bộ phận KTX. |
+| **22** | `data/rents.json` | Cập nhật dữ liệu | Lưu trữ 46 hợp đồng thuê với đa dạng trạng thái. |
+| **23** | `data/accounts.json` | Cập nhật dữ liệu | Lưu trữ 62 tài khoản người dùng tương ứng cho toàn bộ cán bộ và sinh viên. |
 
 ---
 
-### 🌟 3.2. Nâng cấp Báo cáo Doanh thu hàng tháng chi tiết (`printDetailedMonthlyRevenueReport`)
-Thay thế dòng chữ sơ sài cũ bằng báo cáo 3 tầng phân tích chuyên sâu:
-1. **Phần 1 - Bảng hợp đồng chi tiết:** Liệt kê toàn bộ các hợp đồng đang có hiệu lực (`ACTIVE`), hiển thị Mã hợp đồng, Mã sinh viên, Họ tên, Phòng, Loại phòng, Giá thuê/tháng và Kỳ hạn thuê.
-2. **Phần 2 - Cơ cấu doanh thu theo loại phòng:** Phân tích đối sánh giữa phòng **STANDARD** và phòng **VIP**: số phòng, số sinh viên đang ở, tổng doanh thu từng loại phòng và tỷ trọng phần trăm đóng góp.
-3. **Phần 3 - Thẻ chỉ số tài chính KTX:** Bảng tóm tắt các KPI quan trọng:
-   - Tổng doanh thu thực thu hàng tháng.
-   - Doanh thu dự phóng cả năm học (12 tháng).
-   - Tổng số hợp đồng hiệu lực đang đóng tiền.
-   - Doanh thu bình quân trên mỗi sinh viên (VNĐ/SV/tháng).
-   - Doanh thu bình quân trên mỗi phòng KTX (VNĐ/phòng/tháng).
+## 🔍 3. CHI TIẾT CÁC ĐIỂM SÁNG KỸ THUẬT & KIẾN TRÚC OOP
+
+### 🌟 3.1. Cấu trúc dữ liệu tự định nghĩa `Vector<T>`
+```cpp
+template <typename T>
+class Vector {
+private:
+    T* arr = nullptr;           // Mảng động lưu trữ dữ liệu
+    std::size_t n = 0;          // Số lượng phần tử thực tế
+    std::size_t cap = 0;        // Sức chứa bộ nhớ hiện tại
+public:
+    Vector() = default;
+    Vector(const Vector& other);
+    Vector(Vector&& other) noexcept;
+    Vector& operator=(Vector other) noexcept;
+    ~Vector() { delete[] arr; }
+
+    std::size_t size() const { return n; }
+    std::size_t capacity() const { return cap; }
+    bool empty() const { return n == 0; }
+
+    T& operator[](std::size_t i) { return arr[i]; }
+    const T& operator[](std::size_t i) const { return arr[i]; }
+    T& at(std::size_t i);
+
+    void reserve(std::size_t newCap);
+    void push_back(T x);
+    void pop_back();
+    void clear() { n = 0; }
+    void erase(std::size_t i);
+    void swap(Vector& other) noexcept;
+
+    T* begin() { return arr; }
+    T* end() { return arr + n; }
+    const T* begin() const { return arr; }
+    const T* end() const { return arr + n; }
+};
+```
+- **Ưu điểm thiết kế:**
+  - Tự quản lý vòng đời tài nguyên bộ nhớ động tuân thủ quy tắc **Rule of Five / Copy-and-Swap idiom**.
+  - Đảm bảo exception safety và tránh memory leak.
+  - Cung cấp `begin()` và `end()` cho phép sử dụng cú pháp C++ hiện đại `for (T* item : list)` và gọi các hàm thuật toán chuẩn `std::sort`.
 
 ---
 
-### 🌟 3.3. Tách biệt Phân bổ Xếp chỗ & Quản lý Hợp đồng thuê
-- **Menu [3] - Phân bổ & Xếp chỗ Phòng KTX (`handleAllocationManagement`):**
-  - Xem sơ đồ phân bổ trực quan phòng ở & danh sách sinh viên trong từng phòng.
-  - Phân bổ / Xếp phòng mới cho sinh viên (kiểm tra sức chứa tối đa, kiểm tra tính tương thích giới tính nam/nữ, trạng thái phòng).
-  - Chuyển phòng ở (`transferRoom`): Di dời sinh viên sang phòng mới, tự động giải phóng chỗ phòng cũ và cập nhật giá thuê tương ứng.
-  - Trả phòng KTX: Kết thúc hợp đồng, cập nhật trạng thái phòng.
-- **Menu [4] - Quản lý Hợp đồng thuê KTX (`handleContractManagement`):**
-  - Xem danh sách hợp đồng (bảng đẹp mắt).
-  - Tra cứu hợp đồng theo mã hợp đồng hoặc mã sinh viên.
-  - Gia hạn hợp đồng (`extendRent`): Cho phép chọn thêm 1, 3, 6 hoặc 12 tháng.
-  - Cảnh báo các hợp đồng sắp hết hạn (trong vòng 30 ngày tới).
+### 🌟 3.2. Tính Đa hình (Polymorphism) trong Quy định phòng ở
+- Lớp trừu tượng `Room` đặt nền tảng giao diện:
+  ```cpp
+  virtual std::string getRegulations() const = 0;
+  ```
+- Lớp con `StandardRoom` và `VipRoom` định nghĩa quy tắc sinh hoạt riêng biệt:
+  - Phòng Standard nhấn mạnh quy định an toàn chung, giờ đóng cửa và phân công trực nhật dọn dẹp.
+  - Phòng VIP tập trung vào tiện ích cao cấp, quyền ra vào tự do qua thẻ từ, tiêu chuẩn sử dụng thiết bị điện/bếp và dịch vụ dọn phòng.
+- Trong hàm `Room::print()`, lời gọi `getRegulations()` được liên kết động tại thời điểm chạy (Dynamic Binding), thể hiện rõ tính đa hình hướng đối tượng.
 
 ---
 
-### 🌟 3.4. Bẫy lỗi dữ liệu tức thì (`try-catch`) & Chuẩn hóa Khoa / Lớp
-- **Không ngầm định giá trị:** Các hàm trong `EnumHelper` ném ngoại lệ `std::invalid_argument` khi người dùng nhập sai, được bao bọc trong vòng lặp `while (true)` tại `DormManager.cpp` để thông báo lỗi rõ ràng và yêu cầu nhập lại ngay.
-- **Menu Khoa 1..10 (`Faculty`):** Hiển thị danh sách 10 khoa chuẩn của trường, chọn theo số thứ tự 1..10, loại bỏ hoàn toàn tình trạng sai lệch chính tả.
-- **Kiểm định lớp & Tách khóa (`ClassValidator`):** Tự động bóc tách 2 ký tự đầu để xác định khóa sinh viên (ví dụ `22T_DT1` -> `K22`), đồng thời duy trì danh sách lớp hợp lệ trong `data/classes.json`.
-
----
-
-### 🌟 3.5. Makefile biên dịch tự động, tăng tiến và gỡ lỗi
-- **Incremental Build:** Đưa các tệp đối tượng vào `build/*.o`, chỉ biên dịch lại file vừa chỉnh sửa.
-- **Header Dependency Tracking:** Sử dụng cờ `-MMD -MP` tạo tệp `.d` tự động biên dịch lại khi file header `.h` thay đổi.
-- **Tùy chọn cấu hình:** Mặc định chạy `-O2`, bật debug bằng `mingw32-make DEBUG=1` (`-g -O0 -DDEBUG`).
+### 🌟 3.3. Thuật toán phân bổ & Lọc phòng thông minh theo Giới tính
+- Phương thức `RoomManager::findAvailableRoomByGender(Gender g)` kiểm tra tính toàn vẹn:
+  1. Phòng phải còn chỗ (`!r->isFull()`) và không trong trạng thái bảo trì (`status != MAINTENANCE`).
+  2. Nếu phòng hoàn toàn trống (`r->isEmpty()`): chấp nhận xếp cho giới tính `g`.
+  3. Nếu phòng đã có người ở: quét toàn bộ danh sách hợp đồng active trong phòng, nếu tất cả sinh viên cùng phòng đều cùng giới tính `g` thì phòng đó mới đủ điều kiện cho sinh viên giới tính `g`.
+- Nhờ vậy, hệ thống tuyệt đối không bao giờ để xảy ra xung đột giới tính nam/nữ trong cùng một phòng ở KTX.
 
 ---
 
 ## 🧪 4. KẾT QUẢ KIỂM THỬ THỰC TẾ
-1. **Biên dịch dự án:** Biên dịch hoàn tất bằng lệnh `mingw32-make` với **0 lỗi, 0 cảnh báo (Zero Warnings / Zero Errors)**.
-2. **Kiểm tra độ thẳng hàng (Visual Width Check):**
-   - Đã kiểm thử tự động toàn bộ 18 khối bảng hiển thị trong console.
-   - Bảng Báo cáo tỷ lệ lấp đầy (`printOccupancyReport`): Độ rộng 100 ký tự trên mọi dòng.
-   - Bảng Doanh thu KTX tháng (`printRevenueTable`): Độ rộng 121 ký tự trên mọi dòng.
-   - Thẻ Phiếu báo tiền phòng (`printRoomBill`): Độ rộng 76 ký tự trên mọi dòng.
-   - Báo cáo doanh thu chi tiết (`printDetailedMonthlyRevenueReport`): Độ rộng 104, 82, 78 ký tự trên các phân đoạn, khớp chính xác từng ký tự biên `║`.
-3. **Tính toàn vẹn dữ liệu:** Toàn bộ dữ liệu trong thư mục `data/` được giữ nguyên vẹn, không có bất kỳ xáo trộn dữ liệu gốc nào.
+
+1. **Biên dịch dự án:**
+   - Sử dụng trình biên dịch `g++` (chuẩn C++17):
+     ```powershell
+     g++ -std=c++17 -Wall -Wextra -Iinclude main.cpp src/*.cpp src/manager/*.cpp -o app.exe
+     ```
+   - **Kết quả:** Biên dịch thành công với **0 lỗi, 0 cảnh báo (Zero Warnings / Zero Errors)**.
+
+2. **Kiểm thử tự động các tính năng:**
+   - **Test 1 (Tạo phòng mới):** Tạo thành công phòng `P301`, lưu tức thì vào `data/rooms.json`, tra cứu chi tiết hiển thị đúng đầy đủ thông số.
+   - **Test 2 (Quy định phòng - Đa hình):** Kiểm tra hiển thị quy định riêng của phòng Standard (`P101`) và phòng VIP (`V101`) thành công 100%.
+   - **Test 3 & 4a (Thêm sinh viên):** Giao diện hiển thị card chọn giới tính `[1] Nam | [2] Nữ`, không còn xuất hiện các dòng in thừa tự động xác định Khóa/Khoa.
+   - **Test 4b (Phân bổ phòng trực quan):** Hiển thị danh sách sinh viên đang chờ phòng trước khi nhập mã sinh viên; sau khi chọn sinh viên, hiển thị danh sách phòng trống phù hợp giới tính trước khi nhập mã phòng.
+   - **Test 5 (Bộ lọc phân bổ):** Lọc phòng trống cho Nam, cho Nữ, theo Loại VIP/Standard, theo Tòa nhà và lọc sinh viên chưa xếp phòng theo Khoa đều cho kết quả chính xác 100%.
+
+3. **Tính toàn vẹn dữ liệu:**
+   - Toàn bộ các file trong thư mục `data/` được đồng bộ, bảo đảm tính nhất quán giữa Sinh viên, Cán bộ, Hợp đồng, Phòng và Tài khoản người dùng.
+
+---
+
+> [!IMPORTANT]
+> **Cam kết quản lý phiên bản Git:** Toàn bộ mã nguồn và dữ liệu đã được kiểm tra, biên dịch và chạy thử hoàn hảo ở máy cục bộ (Local). Hệ thống **tuyệt đối KHÔNG thực hiện lệnh `git push`** khi chưa có sự xác nhận trực tiếp từ người dùng.

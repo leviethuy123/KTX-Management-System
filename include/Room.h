@@ -2,7 +2,6 @@
 #define ROOM_H
 
 #include "Common.h"
-#include <vector>
 #include <string>
 
 class Rent; // Forward declaration tránh phụ thuộc vòng
@@ -50,8 +49,8 @@ protected:
     int maxStudents;                        // Sức chứa tối đa
     double basePrice;                       // Giá thuê cơ bản (Đưa lên lớp cha vì phòng nào cũng có giá)
     RoomStatus status;                      // Trạng thái: EMPTY, OCCUPIED, FULL, MAINTENANCE
-    std::vector<Rent*> activeRent;          // Hợp đồng của sinh viên đang ở
-    std::vector<BrokenDevice> brokenDevices;// Danh sách các thiết bị hỏng trong phòng
+    Vector<Rent*> activeRent;          // Hợp đồng của sinh viên đang ở
+    Vector<BrokenDevice> brokenDevices;// Danh sách các thiết bị hỏng trong phòng
 
 public:
     Room();
@@ -65,16 +64,17 @@ public:
     int getFloor() const;
     std::string getBuilding() const;
     double getBasePrice() const;
-    const std::vector<Rent*>& getActiveRent() const;
+    const Vector<Rent*>& getActiveRent() const;
 
     // Danh mục trang thiết bị (Tính Đa hình Polymorphism)
     virtual std::string getEquipmentList() const = 0;
+    virtual std::string getRegulations() const = 0;
     virtual std::string getAmenities() const;
     bool hasEquipment(const std::string& deviceName) const;
     bool isEquipmentWorking(const std::string& deviceName) const;
 
     // Quản lý thiết bị hỏng
-    const std::vector<BrokenDevice>& getBrokenDevices() const;
+    const Vector<BrokenDevice>& getBrokenDevices() const;
     void addBrokenDevice(const BrokenDevice& dev);
     bool removeBrokenDevice(const std::string& deviceId);
     int countUnfixedDevices() const;
@@ -117,6 +117,7 @@ public:
 
     std::string getRoomType() const override;
     std::string getEquipmentList() const override;
+    std::string getRegulations() const override;
     double calculateTotalFee(double electricUsage = 0, double waterUsage = 0) const override;
 
     nlohmann::json toJson() const override;
@@ -144,6 +145,7 @@ public:
 
     std::string getRoomType() const override;
     std::string getEquipmentList() const override;
+    std::string getRegulations() const override;
     double calculateTotalFee(double electricUsage = 0, double waterUsage = 0) const override;
 
     nlohmann::json toJson() const override;

@@ -44,8 +44,8 @@ void StaffManager::saveToFile() const {
     std::cout << "[Thành công] Đã lưu " << list.size() << " cán bộ vào " << dataFilePath << "\n";
 }
 
-std::vector<Staff*> StaffManager::findByDepartment(const std::string& dept) const {
-    std::vector<Staff*> results;
+Vector<Staff*> StaffManager::findByDepartment(const std::string& dept) const {
+    Vector<Staff*> results;
     for (Staff* st : list) {
         if (st != nullptr && st->getDepartment() == dept) {
             results.push_back(st);

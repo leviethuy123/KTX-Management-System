@@ -1,24 +1,112 @@
 [
   {
-    "address": "Da Nang",
-    "birthYear": "1985",
-    "department": "Ban Quan ly KTX",
-    "email": "cuong.lv@dut.udn.vn",
     "employeeId": "CB001",
     "fullName": "Le Van Cuong",
     "gender": true,
+    "birthYear": "1982",
     "phone": "0987654321",
-    "position": "Truong nha Khu A"
+    "email": "cuong.lv@dut.udn.vn",
+    "address": "Da Nang",
+    "department": "Ban Quan ly KTX",
+    "position": "Truong ban Quan ly KTX"
   },
   {
-    "address": "Quang Nam",
-    "birthYear": "1990",
-    "department": "Ke toan KTX",
-    "email": "mai.pt@dut.udn.vn",
     "employeeId": "CB002",
     "fullName": "Pham Thi Mai",
     "gender": false,
+    "birthYear": "1988",
     "phone": "0976543210",
+    "email": "mai.pt@dut.udn.vn",
+    "address": "Quang Nam",
+    "department": "Ke toan KTX",
+    "position": "Ke toan truong"
+  },
+  {
+    "employeeId": "CB003",
+    "fullName": "Nguyen Dinh Tuan",
+    "gender": true,
+    "birthYear": "1985",
+    "phone": "0912334455",
+    "email": "tuan.nd@dut.udn.vn",
+    "address": "Thua Thien Hue",
+    "department": "Ban Quan ly KTX",
+    "position": "Pho ban Quan ly KTX"
+  },
+  {
+    "employeeId": "CB004",
+    "fullName": "Tran Thi Hong",
+    "gender": false,
+    "birthYear": "1991",
+    "phone": "0905123987",
+    "email": "hong.tt@dut.udn.vn",
+    "address": "Da Nang",
+    "department": "Ke toan KTX",
     "position": "Thu quy"
+  },
+  {
+    "employeeId": "CB005",
+    "fullName": "Hoang Minh Duc",
+    "gender": true,
+    "birthYear": "1980",
+    "phone": "0935889900",
+    "email": "duc.hm@dut.udn.vn",
+    "address": "Quang Tri",
+    "department": "Phong Ky thuat",
+    "position": "Ky thuat vien dien nuoc"
+  },
+  {
+    "employeeId": "CB006",
+    "fullName": "Vu Van Thang",
+    "gender": true,
+    "birthYear": "1987",
+    "phone": "0944778899",
+    "email": "thang.vv@dut.udn.vn",
+    "address": "Quang Binh",
+    "department": "Phong Ky thuat",
+    "position": "Ky thuat vien bao tri"
+  },
+  {
+    "employeeId": "CB007",
+    "fullName": "Doan Thi Ngoc",
+    "gender": false,
+    "birthYear": "1993",
+    "phone": "0918665544",
+    "email": "ngoc.dt@dut.udn.vn",
+    "address": "Ha Tinh",
+    "department": "Cong tac Sinh vien",
+    "position": "Quan ly toa nha Khu A"
+  },
+  {
+    "employeeId": "CB008",
+    "fullName": "Phan Van Hai",
+    "gender": true,
+    "birthYear": "1989",
+    "phone": "0903221100",
+    "email": "hai.pv@dut.udn.vn",
+    "address": "Nghe An",
+    "department": "Cong tac Sinh vien",
+    "position": "Quan ly toa nha Khu VIP"
+  },
+  {
+    "employeeId": "CB009",
+    "fullName": "Nguyen Thi Lan",
+    "gender": false,
+    "birthYear": "1990",
+    "phone": "0978112233",
+    "email": "lan.nt@dut.udn.vn",
+    "address": "Da Nang",
+    "department": "To Y te KTX",
+    "position": "Y si KTX"
+  },
+  {
+    "employeeId": "CB010",
+    "fullName": "Dang Van Hung",
+    "gender": true,
+    "birthYear": "1984",
+    "phone": "0969556677",
+    "email": "hung.dv@dut.udn.vn",
+    "address": "Binh Dinh",
+    "department": "To Bao ve",
+    "position": "Doi truong Bao ve KTX"
   }
 ]

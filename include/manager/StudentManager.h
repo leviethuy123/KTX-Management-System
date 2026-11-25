@@ -3,7 +3,6 @@
 
 #include "manager/Manager.h"
 #include "Human.h"
-#include <vector>
 #include <string>
 
 /**
@@ -19,8 +18,8 @@ public:
     void saveToFile() const override;
 
     // Nghiệp vụ tìm kiếm đặc thù
-    std::vector<Student*> findByClass(const std::string& className) const;
-    std::vector<Student*> findByFaculty(const std::string& faculty) const;
+    Vector<Student*> findByClass(const std::string& className) const;
+    Vector<Student*> findByFaculty(const std::string& faculty) const;
 };
 
 #endif // STUDENT_MANAGER_H

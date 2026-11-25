@@ -3,7 +3,6 @@
 
 #include "manager/Manager.h"
 #include "Human.h"
-#include <vector>
 #include <string>
 
 /**
@@ -19,7 +18,7 @@ public:
     void saveToFile() const override;
 
     // Tìm kiếm cán bộ theo phòng ban
-    std::vector<Staff*> findByDepartment(const std::string& dept) const;
+    Vector<Staff*> findByDepartment(const std::string& dept) const;
 };
 
 #endif // STAFF_MANAGER_H

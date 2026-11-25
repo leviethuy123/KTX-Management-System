@@ -3,7 +3,6 @@
 
 #include "manager/Manager.h"
 #include "Account.h"
-#include <vector>
 #include <string>
 
 /**

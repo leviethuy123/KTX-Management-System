@@ -45,8 +45,8 @@ void StudentManager::saveToFile() const {
     std::cout << "[Thành công] Đã lưu " << list.size() << " sinh viên vào " << dataFilePath << "\n";
 }
 
-std::vector<Student*> StudentManager::findByClass(const std::string& className) const {
-    std::vector<Student*> results;
+Vector<Student*> StudentManager::findByClass(const std::string& className) const {
+    Vector<Student*> results;
     for (Student* s : list) {
         if (s != nullptr && s->getClass() == className) {
             results.push_back(s);
@@ -55,8 +55,8 @@ std::vector<Student*> StudentManager::findByClass(const std::string& className) 
     return results;
 }
 
-std::vector<Student*> StudentManager::findByFaculty(const std::string& faculty) const {
-    std::vector<Student*> results;
+Vector<Student*> StudentManager::findByFaculty(const std::string& faculty) const {
+    Vector<Student*> results;
     for (Student* s : list) {
         if (s != nullptr && s->getFaculty() == faculty) {
             results.push_back(s);

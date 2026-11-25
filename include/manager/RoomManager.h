@@ -3,8 +3,6 @@
 
 #include "manager/Manager.h"
 #include "Room.h"
-#include "TablePrinter.h"
-#include <vector>
 #include <string>
 
 /**
@@ -20,10 +18,13 @@ public:
     void saveToFile() const override;
 
     // Nghiệp vụ phòng ở
-    std::vector<Room*> findAvailableRoom() const;
+    Room* createRoom(const std::string& rId, const std::string& type, int fl, const std::string& bld,
+                     int maxStd = 0, double price = 0.0, double sFee = 0.0);
+    Vector<Room*> findAvailableRoom() const;
+    Vector<Room*> findAvailableRoomByGender(Gender g) const;
     void printAvailableRoom() const;
-    std::vector<Room*> findByBuilding(const std::string& building) const;
-    std::vector<Room*> findByType(const std::string& roomType) const;
+    Vector<Room*> findByBuilding(const std::string& building) const;
+    Vector<Room*> findByType(const std::string& roomType) const;
 
     // Thống kê & Báo cáo doanh thu
     void getOccupancyStats(int& totalCapacity, int& totalOccupants, double& rate) const;
@@ -31,7 +32,7 @@ public:
     void printRoomBill(const std::string& roomId, double electricUsage, double waterUsage) const;
 
     RoomRevenueRow calculateRoomMonthlyRevenue(const std::string& roomId, double electricUsage, double waterUsage) const;
-    std::vector<RoomRevenueRow> calculateAllRoomsMonthlyRevenue(double defaultElectric = 50.0, double defaultWater = 5.0) const;
+    Vector<RoomRevenueRow> calculateAllRoomsMonthlyRevenue(double defaultElectric = 50.0, double defaultWater = 5.0) const;
     void printMonthlyRevenueReport(const std::string& monthYear, double defaultElec = 50.0, double defaultWater = 5.0) const;
     void printSpecificRoomRevenue(const std::string& roomId, const std::string& monthYear, double electricUsage, double waterUsage) const;
 };

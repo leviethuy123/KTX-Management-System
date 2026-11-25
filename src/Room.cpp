@@ -72,7 +72,7 @@ RoomStatus Room::getStatus() const { return status; }
 int Room::getFloor() const { return floor; }
 std::string Room::getBuilding() const { return building; }
 double Room::getBasePrice() const { return basePrice; }
-const std::vector<Rent*>& Room::getActiveRent() const { return activeRent; }
+const Vector<Rent*>& Room::getActiveRent() const { return activeRent; }
 
 std::string Room::getAmenities() const {
     return getEquipmentList();
@@ -93,7 +93,7 @@ bool Room::isEquipmentWorking(const std::string& deviceName) const {
     return true;
 }
 
-const std::vector<BrokenDevice>& Room::getBrokenDevices() const {
+const Vector<BrokenDevice>& Room::getBrokenDevices() const {
     return brokenDevices;
 }
 
@@ -175,7 +175,8 @@ void Room::print() const {
               << " | Đang ở: " << activeRent.size() << "/" << maxStudents
               << " | Giá: " << std::fixed << std::setprecision(0) << basePrice << "đ"
               << " | Trạng thái: " << std::setw(10) << EnumHelper::roomStatusToString(status)
-              << "\n   >> Trang thiết bị : " << getEquipmentList();
+              << "\n   >> Trang thiết bị : " << getEquipmentList()
+              << "\n   >> Quy định phòng : " << getRegulations();
     int unfixed = countUnfixedDevices();
     if (unfixed > 0) {
         std::cout << "\n   >> ⚠️ Thiết bị hỏng: " << unfixed << " thiết bị đang chờ sửa chữa!";
@@ -198,6 +199,10 @@ std::string StandardRoom::getRoomType() const { return "STANDARD"; }
 
 std::string StandardRoom::getEquipmentList() const {
     return "Bàn học, Ghế, Quạt trần";
+}
+
+std::string StandardRoom::getRegulations() const {
+    return "Đóng cửa 23:00 - 05:00 | Không nấu ăn trong phòng | Trực nhật dọn vệ sinh hàng tuần | Giữ trật tự sau 22:00";
 }
 
 double StandardRoom::calculateTotalFee(double electricUsage, double waterUsage) const {
@@ -266,6 +271,10 @@ std::string VipRoom::getRoomType() const { return "VIP"; }
 
 std::string VipRoom::getEquipmentList() const {
     return "Bàn ghế cao cấp, Quạt, Điều hòa, Bình nóng lạnh, Wifi";
+}
+
+std::string VipRoom::getRegulations() const {
+    return "Ra vào tự do 24/7 (thẻ từ) | Cho phép khu bếp riêng & thiết bị mini | Dịch vụ dọn phòng 2 lần/tuần | Bảo quản nội thất cao cấp";
 }
 
 double VipRoom::calculateTotalFee(double electricUsage, double waterUsage) const {

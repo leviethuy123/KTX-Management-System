@@ -6,7 +6,6 @@
 #include "manager/RentManager.h"
 #include "manager/StaffManager.h"
 #include "manager/AccountManager.h"
-#include "TablePrinter.h"
 
 /**
  * @brief Lớp điều phối trung tâm toàn bộ hệ thống Ký túc xá (Facade Design Pattern).
@@ -34,6 +33,9 @@ private:
     void handleReportManagement();
     void handleAccountManagement();
     void handleChangePassword();
+    void handleCreateRoom();
+    void handleFilterAllocation();
+    static Vector<Student*> getUnassignedStudents(StudentManager* sm);
 
     static void printHeaderInfo();
     static void clearScreen();

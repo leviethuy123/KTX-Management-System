@@ -1,0 +1,6 @@
+11/11/2026
+
+Thêm chức năng tạo phòng
+Thêm quy định riêng biệt của từng phòng 
+Xoá các hiển thị không cần thiêtd như thêm sinh viên khoá và khoa
+Nhập giới tính ,sinh viên nhờ hiển thị trước khi nhập các giới tính ,phòng ,thông tin ,sơ đồ =>> cung cấp thông tin nhập đúng =>> Hạn chế người dùng nhập quá nhiều lỗi giúp dễ thao tác

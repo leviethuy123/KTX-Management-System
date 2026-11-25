@@ -51,8 +51,54 @@ void RoomManager::saveToFile() const {
     std::cout << "[Thành công] Đã lưu " << list.size() << " phòng vào " << dataFilePath << "\n";
 }
 
-std::vector<Room*> RoomManager::findAvailableRoom() const {
-    std::vector<Room*> results;
+Room* RoomManager::createRoom(const std::string& rId, const std::string& type, int fl, const std::string& bld,
+                             int maxStd, double price, double sFee) {
+    if (findById(rId) != nullptr) {
+        std::cout << "[Lỗi] Phòng có mã '" << rId << "' đã tồn tại trong hệ thống!\n";
+        return nullptr;
+    }
+    Room* r = nullptr;
+    if (type == "VIP" || type == "2") {
+        double p = (price > 0) ? price : 1200000.0;
+        double sf = (sFee > 0) ? sFee : 250000.0;
+        VipRoom* vip = new VipRoom(rId, fl, bld, p, sf, RoomStatus::EMPTY);
+        if (maxStd > 0) vip->setMaxStudents(maxStd);
+        r = vip;
+    } else {
+        double p = (price > 0) ? price : 400000.0;
+        StandardRoom* stdR = new StandardRoom(rId, fl, bld, p, RoomStatus::EMPTY);
+        if (maxStd > 0) stdR->setMaxStudents(maxStd);
+        r = stdR;
+    }
+    add(r);
+    return r;
+}
+
+Vector<Room*> RoomManager::findAvailableRoomByGender(Gender g) const {
+    Vector<Room*> results;
+    for (Room* r : list) {
+        if (r != nullptr && !r->isFull() && r->getStatus() != RoomStatus::MAINTENANCE) {
+            if (r->isEmpty()) {
+                results.push_back(r);
+            } else {
+                bool match = true;
+                for (const Rent* rent : r->getActiveRent()) {
+                    if (rent != nullptr && rent->getTenant() != nullptr) {
+                        if (rent->getTenant()->getGender() != g) {
+                            match = false;
+                            break;
+                        }
+                    }
+                }
+                if (match) results.push_back(r);
+            }
+        }
+    }
+    return results;
+}
+
+Vector<Room*> RoomManager::findAvailableRoom() const {
+    Vector<Room*> results;
     for (Room* r : list) {
         if (r != nullptr && !r->isFull() && r->getStatus() != RoomStatus::MAINTENANCE) {
             results.push_back(r);
@@ -62,7 +108,7 @@ std::vector<Room*> RoomManager::findAvailableRoom() const {
 }
 
 void RoomManager::printAvailableRoom() const {
-    std::vector<Room*> available = findAvailableRoom();
+    Vector<Room*> available = findAvailableRoom();
     if (available.empty()) {
         std::cout << "(Không còn phòng nào trống chỗ)\n";
         return;
@@ -71,8 +117,8 @@ void RoomManager::printAvailableRoom() const {
     TablePrinter::printRooms(available);
 }
 
-std::vector<Room*> RoomManager::findByBuilding(const std::string& building) const {
-    std::vector<Room*> results;
+Vector<Room*> RoomManager::findByBuilding(const std::string& building) const {
+    Vector<Room*> results;
     for (Room* r : list) {
         if (r != nullptr && r->getBuilding() == building) {
             results.push_back(r);
@@ -81,8 +127,8 @@ std::vector<Room*> RoomManager::findByBuilding(const std::string& building) cons
     return results;
 }
 
-std::vector<Room*> RoomManager::findByType(const std::string& roomType) const {
-    std::vector<Room*> results;
+Vector<Room*> RoomManager::findByType(const std::string& roomType) const {
+    Vector<Room*> results;
     for (Room* r : list) {
         if (r != nullptr && r->getRoomType() == roomType) {
             results.push_back(r);
@@ -256,8 +302,8 @@ RoomRevenueRow RoomManager::calculateRoomMonthlyRevenue(const std::string& roomI
     return row;
 }
 
-std::vector<RoomRevenueRow> RoomManager::calculateAllRoomsMonthlyRevenue(double defaultElectric, double defaultWater) const {
-    std::vector<RoomRevenueRow> rows;
+Vector<RoomRevenueRow> RoomManager::calculateAllRoomsMonthlyRevenue(double defaultElectric, double defaultWater) const {
+    Vector<RoomRevenueRow> rows;
     for (const Room* r : list) {
         if (r != nullptr) {
             rows.push_back(calculateRoomMonthlyRevenue(r->getId(), defaultElectric, defaultWater));

@@ -1,14 +1,91 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <cstddef>
+#include <stdexcept>
+#include <utility>
 #include <string>
-#include <vector>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <fstream>
 #include <ctime>
 #include <nlohmann/json.hpp>
+
+// =========================================================================
+// 0. KHAI BÁO CLASS VECTOR (KHUÔN MẪU MẢNG ĐỘNG TỰ ĐỊNH NGHĨA)
+// =========================================================================
+
+template <typename T>
+class Vector {
+private:
+    T* arr = nullptr;           // mảng dữ liệu
+    std::size_t n = 0;          // số phần tử
+    std::size_t cap = 0;        // sức chứa
+
+public:
+    using iterator = T*;
+    using const_iterator = const T*;
+
+    // ---------- Khởi tạo / hủy ----------
+    Vector() = default;
+    Vector(const Vector& other);
+    Vector(Vector&& other) noexcept;
+    Vector& operator=(Vector other) noexcept;
+    ~Vector();
+
+    // ---------- Thông tin ----------
+    std::size_t size() const;
+    std::size_t capacity() const;
+    bool empty() const;
+
+    // ---------- Truy cập ----------
+    T& operator[](std::size_t i);
+    const T& operator[](std::size_t i) const;
+    T& at(std::size_t i);
+
+    // ---------- Thay đổi ----------
+    void reserve(std::size_t newCap);
+    void push_back(T x);
+    void pop_back();
+    void clear();
+    void erase(std::size_t i);
+    T* erase(T* it);
+    void swap(Vector& other) noexcept;
+
+    // ---------- Duyệt (dùng được với range-for, std::sort) ----------
+    T* begin();
+    T* end();
+    const T* begin() const;
+    const T* end() const;
+    const T* cbegin() const;
+    const T* cend() const;
+};
+
+// Hỗ trợ serialization/deserialization tự động với nlohmann::json
+template <typename T>
+inline void to_json(nlohmann::json& j, const Vector<T>& v) {
+    j = nlohmann::json::array();
+    for (std::size_t i = 0; i < v.size(); ++i) {
+        j.push_back(v[i]);
+    }
+}
+
+template <typename T>
+inline void from_json(const nlohmann::json& j, Vector<T>& v) {
+    v.clear();
+    for (const auto& item : j) {
+        v.push_back(item.get<T>());
+    }
+}
+
+// Forward declarations tránh phụ thuộc vòng
+class Student;
+class Room;
+class Rent;
+class Staff;
+class Account;
+class BrokenDevice;
 
 // =========================================================================
 // 1. CÁC KIỂU LIỆT KÊ (ENUMS) & TIỆN ÍCH CHUYỂN ĐỔI CHUỖI
@@ -210,14 +287,13 @@ public:
     }
 };
 
-
 // =========================================================================
 // 4. LỚP QUẢN LÝ KHOA ĐỒNG BỘ (FACULTY - ĐỒNG BỘ 8 KHOA CHUẨN ĐHBK)
 // =========================================================================
 
 class Faculty {
 public:
-    static const std::vector<std::string>& getList();
+    static const Vector<std::string>& getList();
     static void printMenu();
     static std::string getByIndex(int index); // 1..8
     static bool isValidIndex(int index);
@@ -239,6 +315,51 @@ public:
     // Bẫy lỗi và quy định rõ tính chính xác của className (phải khớp Khóa và 8 Khoa chuẩn)
     static bool isValidClassName(const std::string& className, std::string& errorReason);
     static bool isValidClassName(const std::string& className);
+};
+
+// =========================================================================
+// 6. TIỆN ÍCH CHUỖI & TÍNH TOÁN OFFSET VISUAL UTF-8 (STRINGUTILS)
+// =========================================================================
+
+namespace StringUtils {
+    int utf8Width(const std::string& str);
+    int utf8Offset(const std::string& str);
+    std::string padRight(const std::string& str, int visualWidth);
+    std::string padLeft(const std::string& str, int visualWidth);
+    std::string padCenter(const std::string& str, int visualWidth);
+    std::string repeat(const std::string& pattern, int count);
+    std::string formatMoney(double amount);
+}
+
+// =========================================================================
+// 7. DÒNG DOANH THU PHÒNG & BẢNG IN ASCII (ROOMREVENUEROW & TABLEPRINTER)
+// =========================================================================
+
+struct RoomRevenueRow {
+    std::string roomId;
+    std::string roomType;
+    int occupants = 0;
+    int maxCapacity = 0;
+    double basePrice = 0.0;
+    double serviceFee = 0.0;
+    double rentFeeTotal = 0.0;
+    double electricCost = 0.0;
+    double waterCost = 0.0;
+    double totalRevenue = 0.0;
+};
+
+class TablePrinter {
+public:
+    static void printStudents(const Vector<Student*>& list);
+    static void printRooms(const Vector<Room*>& list);
+    static void printRents(const Vector<Rent*>& list);
+    static void printStaffs(const Vector<Staff*>& list);
+    static void printAccounts(const Vector<Account*>& list);
+    static void printRoomAllocationMap(const Vector<Room*>& list);
+    static void printBrokenDevices(const std::string& roomId, const Vector<BrokenDevice>& list);
+    static void printRevenueTable(const Vector<RoomRevenueRow>& rows, const std::string& monthYear);
+    static void printSingleRoomRevenue(const RoomRevenueRow& row, const std::string& monthYear);
+    static void printDetailedMonthlyRevenueReport(const Vector<Rent*>& rents, const Vector<Room*>& rooms);
 };
 
 #endif // COMMON_H

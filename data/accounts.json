@@ -1,42 +1,498 @@
 [
   {
-    "accountId": "ACC001",
-    "ownerId": "CB001",
+    "accountId": "ACC_ADM01",
+    "username": "admin",
     "passwordHash": "admin123",
     "role": "ADMIN",
     "status": true,
-    "username": "admin"
+    "ownerId": "CB001"
   },
   {
-    "accountId": "ACC003",
-    "ownerId": "SV101",
-    "passwordHash": "123456",
-    "role": "STUDENT",
-    "status": true,
-    "username": "an.nv"
-  },
-  {
-    "accountId": "ACC004",
-    "ownerId": "SV102",
-    "passwordHash": "123456",
-    "role": "STUDENT",
-    "status": true,
-    "username": "bich.tt"
-  },
-  {
-    "accountId": "ACC005",
-    "ownerId": "SV103",
-    "passwordHash": "123456",
-    "role": "STUDENT",
-    "status": true,
-    "username": "long.lh"
-  },
-  {
-    "accountId": "ACC006",
-    "ownerId": "ADMIN",
-    "passwordHash": "f83e9f94",
+    "accountId": "ACC_ADM02",
+    "username": "dat",
+    "passwordHash": "admin123",
     "role": "ADMIN",
     "status": true,
-    "username": "dat"
+    "ownerId": "ADMIN"
+  },
+  {
+    "accountId": "ACC_CB001",
+    "username": "cuong.lv",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB001"
+  },
+  {
+    "accountId": "ACC_CB002",
+    "username": "mai.pt",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB002"
+  },
+  {
+    "accountId": "ACC_CB003",
+    "username": "tuan.nd",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB003"
+  },
+  {
+    "accountId": "ACC_CB004",
+    "username": "hong.tt",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB004"
+  },
+  {
+    "accountId": "ACC_CB005",
+    "username": "duc.hm",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB005"
+  },
+  {
+    "accountId": "ACC_CB006",
+    "username": "thang.vv",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB006"
+  },
+  {
+    "accountId": "ACC_CB007",
+    "username": "ngoc.dt",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB007"
+  },
+  {
+    "accountId": "ACC_CB008",
+    "username": "hai.pv",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB008"
+  },
+  {
+    "accountId": "ACC_CB009",
+    "username": "lan.nt",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB009"
+  },
+  {
+    "accountId": "ACC_CB010",
+    "username": "hung.dv",
+    "passwordHash": "staff123",
+    "role": "STAFF",
+    "status": true,
+    "ownerId": "CB010"
+  },
+  {
+    "accountId": "ACC_SV001",
+    "username": "sv001",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV001"
+  },
+  {
+    "accountId": "ACC_SV002",
+    "username": "sv002",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV002"
+  },
+  {
+    "accountId": "ACC_SV003",
+    "username": "sv003",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV003"
+  },
+  {
+    "accountId": "ACC_SV004",
+    "username": "sv004",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV004"
+  },
+  {
+    "accountId": "ACC_SV005",
+    "username": "sv005",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV005"
+  },
+  {
+    "accountId": "ACC_SV006",
+    "username": "sv006",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV006"
+  },
+  {
+    "accountId": "ACC_SV007",
+    "username": "sv007",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV007"
+  },
+  {
+    "accountId": "ACC_SV008",
+    "username": "sv008",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV008"
+  },
+  {
+    "accountId": "ACC_SV009",
+    "username": "sv009",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV009"
+  },
+  {
+    "accountId": "ACC_SV010",
+    "username": "sv010",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV010"
+  },
+  {
+    "accountId": "ACC_SV011",
+    "username": "sv011",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV011"
+  },
+  {
+    "accountId": "ACC_SV012",
+    "username": "sv012",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV012"
+  },
+  {
+    "accountId": "ACC_SV013",
+    "username": "sv013",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV013"
+  },
+  {
+    "accountId": "ACC_SV014",
+    "username": "sv014",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV014"
+  },
+  {
+    "accountId": "ACC_SV015",
+    "username": "sv015",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV015"
+  },
+  {
+    "accountId": "ACC_SV016",
+    "username": "sv016",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV016"
+  },
+  {
+    "accountId": "ACC_SV017",
+    "username": "sv017",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV017"
+  },
+  {
+    "accountId": "ACC_SV018",
+    "username": "sv018",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV018"
+  },
+  {
+    "accountId": "ACC_SV019",
+    "username": "sv019",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV019"
+  },
+  {
+    "accountId": "ACC_SV020",
+    "username": "sv020",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV020"
+  },
+  {
+    "accountId": "ACC_SV021",
+    "username": "sv021",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV021"
+  },
+  {
+    "accountId": "ACC_SV022",
+    "username": "sv022",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV022"
+  },
+  {
+    "accountId": "ACC_SV023",
+    "username": "sv023",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV023"
+  },
+  {
+    "accountId": "ACC_SV024",
+    "username": "sv024",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV024"
+  },
+  {
+    "accountId": "ACC_SV025",
+    "username": "sv025",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV025"
+  },
+  {
+    "accountId": "ACC_SV026",
+    "username": "sv026",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV026"
+  },
+  {
+    "accountId": "ACC_SV027",
+    "username": "sv027",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV027"
+  },
+  {
+    "accountId": "ACC_SV028",
+    "username": "sv028",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV028"
+  },
+  {
+    "accountId": "ACC_SV029",
+    "username": "sv029",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV029"
+  },
+  {
+    "accountId": "ACC_SV030",
+    "username": "sv030",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV030"
+  },
+  {
+    "accountId": "ACC_SV031",
+    "username": "sv031",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV031"
+  },
+  {
+    "accountId": "ACC_SV032",
+    "username": "sv032",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV032"
+  },
+  {
+    "accountId": "ACC_SV033",
+    "username": "sv033",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV033"
+  },
+  {
+    "accountId": "ACC_SV034",
+    "username": "sv034",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV034"
+  },
+  {
+    "accountId": "ACC_SV035",
+    "username": "sv035",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV035"
+  },
+  {
+    "accountId": "ACC_SV036",
+    "username": "sv036",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV036"
+  },
+  {
+    "accountId": "ACC_SV037",
+    "username": "sv037",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV037"
+  },
+  {
+    "accountId": "ACC_SV038",
+    "username": "sv038",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV038"
+  },
+  {
+    "accountId": "ACC_SV039",
+    "username": "sv039",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV039"
+  },
+  {
+    "accountId": "ACC_SV040",
+    "username": "sv040",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV040"
+  },
+  {
+    "accountId": "ACC_SV041",
+    "username": "sv041",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV041"
+  },
+  {
+    "accountId": "ACC_SV042",
+    "username": "sv042",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV042"
+  },
+  {
+    "accountId": "ACC_SV043",
+    "username": "sv043",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV043"
+  },
+  {
+    "accountId": "ACC_SV044",
+    "username": "sv044",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV044"
+  },
+  {
+    "accountId": "ACC_SV045",
+    "username": "sv045",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV045"
+  },
+  {
+    "accountId": "ACC_SV046",
+    "username": "sv046",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV046"
+  },
+  {
+    "accountId": "ACC_SV047",
+    "username": "sv047",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV047"
+  },
+  {
+    "accountId": "ACC_SV048",
+    "username": "sv048",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV048"
+  },
+  {
+    "accountId": "ACC_SV049",
+    "username": "sv049",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV049"
+  },
+  {
+    "accountId": "ACC_SV050",
+    "username": "sv050",
+    "passwordHash": "123456",
+    "role": "STUDENT",
+    "status": true,
+    "ownerId": "SV050"
   }
 ]

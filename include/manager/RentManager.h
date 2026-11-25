@@ -5,7 +5,6 @@
 #include "Rent.h"
 #include "manager/StudentManager.h"
 #include "manager/RoomManager.h"
-#include <vector>
 #include <string>
 
 /**
@@ -22,9 +21,9 @@ public:
     void saveToFile() const override;
 
     // Tìm kiếm theo tiêu chí
-    std::vector<Rent*> findByStatus(RentStatus status) const;
-    std::vector<Rent*> findByStudent(const std::string& studentId) const;
-    std::vector<Rent*> findByRoom(const std::string& roomId) const;
+    Vector<Rent*> findByStatus(RentStatus status) const;
+    Vector<Rent*> findByStudent(const std::string& studentId) const;
+    Vector<Rent*> findByRoom(const std::string& roomId) const;
 
     // Nghiệp vụ vòng đời hợp đồng
     Rent* createRent(const std::string& rentId, Student* student, Room* room,
@@ -34,7 +33,7 @@ public:
     bool transferRoom(const std::string& studentId, const std::string& newRoomId, RoomManager& roomMgr);
 
     // Cảnh báo & Tự động quét hợp đồng
-    std::vector<Rent*> findExpiringRents(const Date& currentDate, int daysThreshold = 30) const;
+    Vector<Rent*> findExpiringRents(const Date& currentDate, int daysThreshold = 30) const;
     void printExpiringRents(const Date& currentDate, int daysThreshold = 30) const;
     int checkAndExpireRents(const Date& currentDate);
     double calculateTotalMonthlyRevenue() const;

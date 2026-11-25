@@ -81,8 +81,8 @@ void RentManager::saveToFile() const {
     std::cout << "[Thành công] Đã lưu " << list.size() << " hợp đồng vào " << dataFilePath << "\n";
 }
 
-std::vector<Rent*> RentManager::findByStatus(RentStatus status) const {
-    std::vector<Rent*> results;
+Vector<Rent*> RentManager::findByStatus(RentStatus status) const {
+    Vector<Rent*> results;
     for (Rent* r : list) {
         if (r != nullptr && r->getStatus() == status) {
             results.push_back(r);
@@ -91,8 +91,8 @@ std::vector<Rent*> RentManager::findByStatus(RentStatus status) const {
     return results;
 }
 
-std::vector<Rent*> RentManager::findByStudent(const std::string& studentId) const {
-    std::vector<Rent*> results;
+Vector<Rent*> RentManager::findByStudent(const std::string& studentId) const {
+    Vector<Rent*> results;
     for (Rent* r : list) {
         if (r != nullptr && r->getTenant() != nullptr && r->getTenant()->getId() == studentId) {
             results.push_back(r);
@@ -101,8 +101,8 @@ std::vector<Rent*> RentManager::findByStudent(const std::string& studentId) cons
     return results;
 }
 
-std::vector<Rent*> RentManager::findByRoom(const std::string& roomId) const {
-    std::vector<Rent*> results;
+Vector<Rent*> RentManager::findByRoom(const std::string& roomId) const {
+    Vector<Rent*> results;
     for (Rent* r : list) {
         if (r != nullptr && r->getRoom() != nullptr && r->getRoom()->getId() == roomId) {
             results.push_back(r);
@@ -164,8 +164,8 @@ bool RentManager::terminateRent(Rent* r, const Date& actualEndDate) {
     return true;
 }
 
-std::vector<Rent*> RentManager::findExpiringRents(const Date& currentDate, int daysThreshold) const {
-    std::vector<Rent*> results;
+Vector<Rent*> RentManager::findExpiringRents(const Date& currentDate, int daysThreshold) const {
+    Vector<Rent*> results;
     for (Rent* r : list) {
         if (r != nullptr && r->isActive()) {
             Date expDate = r->getExpectedEndDate();

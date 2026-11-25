@@ -254,16 +254,26 @@ std::string DormManager::inputFacultyChoice() {
 }
 
 Gender DormManager::inputGender(const std::string& prompt) {
+    std::cout << "┌───────────────────────────────────────────────┐\n";
+    std::cout << "│  [1] Nam (MALE)          [2] Nữ (FEMALE)      │\n";
+    std::cout << "└───────────────────────────────────────────────┘\n";
     while (true) {
         if (std::cin.eof()) return Gender::MALE;
-        std::string s = inputString(prompt);
-        try {
-            return EnumHelper::stringToGender(s);
-        } catch (const std::invalid_argument& e) {
-            std::cout << "[Lỗi] " << e.what() << "\n";
-        } catch (...) {
-            std::cout << "[Lỗi] Dữ liệu giới tính không hợp lệ! Vui lòng nhập lại.\n";
+        std::string s = inputString(prompt.empty() ? ">> Chọn giới tính (1: Nam, 2: Nữ, mặc định 1): " : prompt);
+        size_t start = s.find_first_not_of(" \t\r\n");
+        if (start != std::string::npos) {
+            size_t end = s.find_last_not_of(" \t\r\n");
+            s = s.substr(start, end - start + 1);
+        } else {
+            s.clear();
         }
+        if (s.empty() || s == "1" || s == "Nam" || s == "nam" || s == "NAM" || s == "MALE" || s == "male") {
+            return Gender::MALE;
+        }
+        if (s == "2" || s == "0" || s == "Nu" || s == "nu" || s == "NU" || s == "Nữ" || s == "nữ" || s == "FEMALE" || s == "female") {
+            return Gender::FEMALE;
+        }
+        std::cout << "[Lỗi] Lựa chọn '" << s << "' không hợp lệ! Vui lòng chọn 1 (Nam) hoặc 2 (Nữ).\n";
     }
 }
 
@@ -568,6 +578,7 @@ void DormManager::handleRoomManagement() {
         std::cout << "║  [5] Xem chi tiết 1 phòng theo mã & thiết bị hỏng                        ║\n";
         std::cout << "║  [6] Báo hỏng thiết bị trong phòng                                       ║\n";
         std::cout << "║  [7] Xác nhận đã sửa chữa thiết bị                                       ║\n";
+        std::cout << "║  [8] Thêm phòng mới vào hệ thống                                         ║\n";
         std::cout << "║  [0] Quay lại Menu chính                                                 ║\n";
         std::cout << "╚══════════════════════════════════════════════════════════════════════════╝\n";
         int c = inputInt(">> Lựa chọn: ");
@@ -660,6 +671,8 @@ void DormManager::handleRoomManagement() {
                     }
                 }
             }
+        } else if (c == 8) {
+            handleCreateRoom();
         }
         pauseScreen();
     }
@@ -689,7 +702,9 @@ void DormManager::handleStudentManagement() {
             std::string id = inputNonEmpty("Nhập mã sinh viên: ");
             Student* s = studentManage->findById(id);
             if (s != nullptr) {
-                TablePrinter::printStudents({s});
+                Vector<Student*> single;
+                single.push_back(s);
+                TablePrinter::printStudents(single);
             } else {
                 std::cout << "[Lỗi] Không tìm thấy sinh viên có mã: " << id << "\n";
             }
@@ -734,8 +749,6 @@ void DormManager::handleStudentManagement() {
             std::string lop = inputValidClassName("Lớp sinh hoạt (ví dụ: 22T_DT1, 23KT): ");
             std::string khoaHoc = ClassValidator::extractCohort(lop);
             std::string khoa = ClassValidator::extractFaculty(lop);
-            std::cout << "-> Tự động xác định Khóa: " << khoaHoc << "\n";
-            std::cout << "-> Tự động xác định Khoa: " << khoa << "\n";
 
             std::string phone = inputValidPhone("Số điện thoại (10 số, bắt đầu bằng 0): ");
             std::string email = inputValidEmail("Email liên lạc: ");
@@ -766,6 +779,7 @@ void DormManager::handleAllocationManagement() {
         std::cout << "║  [3] Đăng ký xếp chỗ phòng mới cho sinh viên                             ║\n";
         std::cout << "║  [4] Chuyển phòng cho sinh viên đang ở                                   ║\n";
         std::cout << "║  [5] Trả phòng & Giải phóng chỗ (Thanh lý hợp đồng)                      ║\n";
+        std::cout << "║  [6] Lọc & Tìm kiếm phòng xếp chỗ theo tiêu chí                          ║\n";
         std::cout << "║  [0] Quay lại Menu chính                                                 ║\n";
         std::cout << "╚══════════════════════════════════════════════════════════════════════════╝\n";
         int c = inputInt(">> Lựa chọn: ");
@@ -780,13 +794,16 @@ void DormManager::handleAllocationManagement() {
             TablePrinter::printRooms(list);
         } else if (c == 3) {
             std::cout << "\n--- ĐĂNG KÝ XẾP CHỖ PHÒNG MỚI CHO SINH VIÊN ---\n";
-            std::string rentId = inputNonEmpty("Mã hợp đồng mới (ví dụ: HD004): ");
-            while (rentManager->findById(rentId) != nullptr) {
-                std::cout << "[Lỗi] Mã hợp đồng '" << rentId << "' đã tồn tại! Vui lòng nhập mã khác.\n";
-                rentId = inputNonEmpty("Mã hợp đồng mới: ");
+            Vector<Student*> unassigned = getUnassignedStudents(studentManage);
+            if (unassigned.empty()) {
+                std::cout << "[Thông báo] Hiện tại tất cả sinh viên trong hệ thống đều đã được xếp phòng ở!\n";
+                pauseScreen();
+                continue;
             }
+            std::cout << "\n=== DANH SÁCH SINH VIÊN ĐANG CHỜ XẾP PHÒNG (" << unassigned.size() << " sinh viên) ===\n";
+            TablePrinter::printStudents(unassigned);
 
-            std::string sId = inputNonEmpty("Mã sinh viên: ");
+            std::string sId = inputNonEmpty("Nhập mã sinh viên cần xếp phòng từ danh sách trên: ");
             Student* s = studentManage->findById(sId);
             if (s == nullptr) {
                 std::cout << "[Lỗi] Không tìm thấy sinh viên có mã: " << sId << "\n";
@@ -802,7 +819,19 @@ void DormManager::handleAllocationManagement() {
                 continue;
             }
 
-            std::string rId = inputNonEmpty("Mã phòng muốn xếp (ví dụ: P101, P201): ");
+            auto suitableRooms = roomManage->findAvailableRoomByGender(s->getGender());
+            if (suitableRooms.empty()) {
+                std::cout << "[Lỗi] Hiện không còn phòng trống nào phù hợp cho sinh viên giới tính: "
+                          << EnumHelper::genderToString(s->getGender()) << "!\n";
+                pauseScreen();
+                continue;
+            }
+            std::cout << "\n=== DANH SÁCH PHÒNG CÒN CHỖ PHÙ HỢP CHO "
+                      << (s->getGender() == Gender::MALE ? "NAM" : "NỮ")
+                      << " (" << suitableRooms.size() << " phòng) ===\n";
+            TablePrinter::printRooms(suitableRooms);
+
+            std::string rId = inputNonEmpty("Nhập mã phòng muốn xếp từ danh sách trên: ");
             Room* r = roomManage->findById(rId);
             if (r == nullptr) {
                 std::cout << "[Lỗi] Không tìm thấy phòng có mã: " << rId << "\n";
@@ -837,6 +866,12 @@ void DormManager::handleAllocationManagement() {
                     }
                 }
                 if (conflict) continue;
+            }
+
+            std::string rentId = inputNonEmpty("Mã hợp đồng mới (ví dụ: HD047): ");
+            while (rentManager->findById(rentId) != nullptr) {
+                std::cout << "[Lỗi] Mã hợp đồng '" << rentId << "' đã tồn tại! Vui lòng nhập mã khác.\n";
+                rentId = inputNonEmpty("Mã hợp đồng mới: ");
             }
 
             Period period = inputPeriod("Thời hạn thuê (1, 3, 6, 12 tháng): ");
@@ -895,6 +930,8 @@ void DormManager::handleAllocationManagement() {
                 roomManage->saveToFile();
                 studentManage->saveToFile();
             }
+        } else if (c == 6) {
+            handleFilterAllocation();
         }
         pauseScreen();
     }
@@ -926,7 +963,9 @@ void DormManager::handleContractManagement() {
             std::string rentId = inputNonEmpty("Nhập mã hợp đồng: ");
             Rent* r = rentManager->findById(rentId);
             if (r != nullptr) {
-                TablePrinter::printRents({r});
+                Vector<Rent*> single;
+                single.push_back(r);
+                TablePrinter::printRents(single);
             } else {
                 std::cout << "[Lỗi] Không tìm thấy hợp đồng có mã: " << rentId << "\n";
             }
@@ -1217,4 +1256,127 @@ void DormManager::handleChangePassword() {
         }
     }
     pauseScreen();
+}
+
+Vector<Student*> DormManager::getUnassignedStudents(StudentManager* sm) {
+    Vector<Student*> unassigned;
+    if (sm == nullptr) return unassigned;
+    for (Student* s : sm->getAll()) {
+        if (s != nullptr && (s->getRent() == nullptr || !s->getRent()->isActive())) {
+            unassigned.push_back(s);
+        }
+    }
+    return unassigned;
+}
+
+void DormManager::handleCreateRoom() {
+    std::cout << "\n╔══════════════════════════════════════════════════════════════════════════╗\n";
+    std::cout << "║                           THÊM PHÒNG MỚI VÀO KTX                         ║\n";
+    std::cout << "╚══════════════════════════════════════════════════════════════════════════╝\n";
+    std::cout << "┌───────────────────────────────────────────────┐\n";
+    std::cout << "│  [1] STANDARD (Tiêu chuẩn)   [2] VIP (Dịch vụ)│\n";
+    std::cout << "└───────────────────────────────────────────────┘\n";
+    int typeChoice = inputInt(">> Chọn loại phòng (1: STANDARD, 2: VIP, mặc định 1): ");
+    std::string type = (typeChoice == 2) ? "VIP" : "STANDARD";
+
+    std::string rId = inputNonEmpty("Mã phòng mới (ví dụ: P301, V301): ");
+    while (roomManage->findById(rId) != nullptr) {
+        std::cout << "[Lỗi] Mã phòng '" << rId << "' đã tồn tại trong hệ thống! Vui lòng nhập mã khác.\n";
+        rId = inputNonEmpty("Mã phòng mới: ");
+    }
+
+    std::string defaultBld = (type == "VIP") ? "Khu VIP" : "Khu A";
+    std::string bld = inputString("Tòa nhà (mặc định: " + defaultBld + "): ");
+    if (bld.empty()) bld = defaultBld;
+
+    int floor = inputInt("Tầng (1 - 10, mặc định 1): ");
+    if (floor <= 0 || floor > 10) floor = 1;
+
+    int defaultCap = (type == "VIP") ? 4 : 8;
+    int maxStd = inputInt("Sức chứa tối đa (mặc định " + std::to_string(defaultCap) + " chỗ): ");
+    if (maxStd <= 0) maxStd = defaultCap;
+
+    double defaultPrice = (type == "VIP") ? 1200000.0 : 400000.0;
+    double price = inputDouble("Giá thuê cơ bản/tháng (mặc định " + std::to_string(static_cast<long long>(defaultPrice)) + " đ): ");
+    if (price <= 0) price = defaultPrice;
+
+    double sFee = 0.0;
+    if (type == "VIP") {
+        double defaultSFee = 250000.0;
+        sFee = inputDouble("Phí dịch vụ VIP/tháng (mặc định " + std::to_string(static_cast<long long>(defaultSFee)) + " đ): ");
+        if (sFee <= 0) sFee = defaultSFee;
+    }
+
+    Room* created = roomManage->createRoom(rId, type, floor, bld, maxStd, price, sFee);
+    if (created != nullptr) {
+        roomManage->saveToFile();
+        std::cout << "\n[Thành công] Đã tạo thành công phòng " << rId << " (" << type << ", Tòa " << bld << ", Tầng " << floor << ")!\n";
+        std::cout << "--- THÔNG TIN PHÒNG VỪA TẠO ---\n";
+        created->print();
+    }
+}
+
+void DormManager::handleFilterAllocation() {
+    while (true) {
+        clearScreen();
+        printHeaderInfo();
+        std::cout << "╔══════════════════════════════════════════════════════════════════════════╗\n";
+        std::cout << "║                TÌM KIẾM & LỌC PHÒNG XẾP CHỖ THEO TIÊU CHÍ                ║\n";
+        std::cout << "╠══════════════════════════════════════════════════════════════════════════╣\n";
+        std::cout << "║  [1] Lọc các phòng còn chỗ trống dành cho NAM                            ║\n";
+        std::cout << "║  [2] Lọc các phòng còn chỗ trống dành cho NỮ                             ║\n";
+        std::cout << "║  [3] Lọc phòng còn chỗ theo Loại phòng (STANDARD / VIP)                  ║\n";
+        std::cout << "║  [4] Lọc phòng còn chỗ theo Tòa nhà                                      ║\n";
+        std::cout << "║  [5] Lọc danh sách sinh viên chưa có phòng theo Khoa                     ║\n";
+        std::cout << "║  [0] Quay lại Menu Phân bổ & Xếp phòng                                   ║\n";
+        std::cout << "╚══════════════════════════════════════════════════════════════════════════╝\n";
+        int choice = inputInt(">> Lựa chọn của bạn: ");
+        if (choice == 0) break;
+
+        if (choice == 1) {
+            auto list = roomManage->findAvailableRoomByGender(Gender::MALE);
+            std::cout << "\n=== CÁC PHÒNG CÒN CHỖ TRỐNG PHÙ HỢP CHO NAM (" << list.size() << " phòng) ===\n";
+            TablePrinter::printRooms(list);
+        } else if (choice == 2) {
+            auto list = roomManage->findAvailableRoomByGender(Gender::FEMALE);
+            std::cout << "\n=== CÁC PHÒNG CÒN CHỖ TRỐNG PHÙ HỢP CHO NỮ (" << list.size() << " phòng) ===\n";
+            TablePrinter::printRooms(list);
+        } else if (choice == 3) {
+            std::cout << "┌───────────────────────────────────────────────┐\n";
+            std::cout << "│  [1] STANDARD             [2] VIP             │\n";
+            std::cout << "└───────────────────────────────────────────────┘\n";
+            int tChoice = inputInt(">> Chọn loại phòng (1: STANDARD, 2: VIP): ");
+            std::string tName = (tChoice == 2) ? "VIP" : "STANDARD";
+            Vector<Room*> filtered;
+            for (Room* r : roomManage->findAvailableRoom()) {
+                if (r != nullptr && r->getRoomType() == tName) {
+                    filtered.push_back(r);
+                }
+            }
+            std::cout << "\n=== CÁC PHÒNG " << tName << " CÒN CHỖ TRỐNG (" << filtered.size() << " phòng) ===\n";
+            TablePrinter::printRooms(filtered);
+        } else if (choice == 4) {
+            std::string bld = inputNonEmpty("Nhập tên tòa nhà (ví dụ: Khu A, Khu VIP): ");
+            Vector<Room*> filtered;
+            for (Room* r : roomManage->findAvailableRoom()) {
+                if (r != nullptr && r->getBuilding() == bld) {
+                    filtered.push_back(r);
+                }
+            }
+            std::cout << "\n=== CÁC PHÒNG TÒA '" << bld << "' CÒN CHỖ TRỐNG (" << filtered.size() << " phòng) ===\n";
+            TablePrinter::printRooms(filtered);
+        } else if (choice == 5) {
+            std::cout << "\n--- CHỌN KHOA CẦN LỌC SINH VIÊN CHƯA CÓ PHÒNG ---\n";
+            std::string fac = inputFacultyChoice();
+            Vector<Student*> filtered;
+            for (Student* s : getUnassignedStudents(studentManage)) {
+                if (s != nullptr && s->getFaculty() == fac) {
+                    filtered.push_back(s);
+                }
+            }
+            std::cout << "\n=== SINH VIÊN KHOA '" << fac << "' CHƯA CÓ PHÒNG (" << filtered.size() << " sinh viên) ===\n";
+            TablePrinter::printStudents(filtered);
+        }
+        pauseScreen();
+    }
 }

@@ -1,47 +1,274 @@
 [
   {
-    "basePrice": 400000.0,
-    "brokenDevices": [
-      {
-        "description": "Hu",
-        "deviceId": "1",
-        "deviceName": "Den",
-        "reportDate": "01/01/2030"
-      }
-    ],
-    "building": "Khu A",
-    "floor": 1,
-    "maxStudents": 8,
     "roomId": "P101",
     "roomType": "STANDARD",
-    "status": "OCCUPIED"
-  },
-  {
-    "basePrice": 400000.0,
-    "brokenDevices": [
-      {
-        "description": "Kêu to và quay chậm",
-        "deviceId": "TB01",
-        "deviceName": "Quạt trần",
-        "reportDate": "15/10/2026"
-      }
-    ],
     "building": "Khu A",
     "floor": 1,
     "maxStudents": 8,
-    "roomId": "P102",
-    "roomType": "STANDARD",
-    "status": "OCCUPIED"
+    "basePrice": 400000.0,
+    "status": "FULL",
+    "brokenDevices": [
+      {
+        "deviceId": "TB01",
+        "deviceName": "Quạt trần",
+        "description": "Kêu to và quay chậm",
+        "reportDate": "15/10/2026"
+      }
+    ]
   },
   {
+    "roomId": "P102",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 1,
+    "maxStudents": 8,
+    "basePrice": 400000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "P103",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 1,
+    "maxStudents": 8,
+    "basePrice": 400000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": [
+      {
+        "deviceId": "TB02",
+        "deviceName": "Bóng đèn tuýp",
+        "description": "Chập chờn lúc sáng lúc tắt",
+        "reportDate": "01/11/2026"
+      }
+    ]
+  },
+  {
+    "roomId": "P104",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 1,
+    "maxStudents": 8,
+    "basePrice": 400000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "P105",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 1,
+    "maxStudents": 8,
+    "basePrice": 400000.0,
+    "status": "EMPTY",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "P201",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 2,
+    "maxStudents": 4,
+    "basePrice": 400000.0,
+    "status": "FULL",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "P202",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 2,
+    "maxStudents": 4,
+    "basePrice": 400000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": [
+      {
+        "deviceId": "TB03",
+        "deviceName": "Ổ khóa cửa",
+        "description": "Ổ khóa bị kẹt khó xoay chìa",
+        "reportDate": "28/10/2026"
+      }
+    ]
+  },
+  {
+    "roomId": "P203",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 2,
+    "maxStudents": 4,
+    "basePrice": 400000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "P204",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 2,
+    "maxStudents": 4,
+    "basePrice": 400000.0,
+    "status": "EMPTY",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "P205",
+    "roomType": "STANDARD",
+    "building": "Khu A",
+    "floor": 2,
+    "maxStudents": 4,
+    "basePrice": 400000.0,
+    "status": "MAINTENANCE",
+    "brokenDevices": [
+      {
+        "deviceId": "TB04",
+        "deviceName": "Vòi hoa sen",
+        "description": "Rò rỉ nước ở van đóng mở",
+        "reportDate": "05/11/2026"
+      },
+      {
+        "deviceId": "TB05",
+        "deviceName": "Cống thoát sàn",
+        "description": "Nước thoát chậm gây đọng sàn vệ sinh",
+        "reportDate": "06/11/2026"
+      }
+    ]
+  },
+  {
+    "roomId": "V101",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 1,
+    "maxStudents": 2,
     "basePrice": 1200000.0,
-    "brokenDevices": [],
+    "serviceFee": 250000.0,
+    "status": "FULL",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "V102",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 1,
+    "maxStudents": 2,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": [
+      {
+        "deviceId": "TB06",
+        "deviceName": "Tủ lạnh mini",
+        "description": "Không lạnh ngăn đông đá",
+        "reportDate": "02/11/2026"
+      }
+    ]
+  },
+  {
+    "roomId": "V103",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 1,
+    "maxStudents": 2,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "EMPTY",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "V104",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 1,
+    "maxStudents": 4,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "FULL",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "V105",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 1,
+    "maxStudents": 4,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": [
+      {
+        "deviceId": "TB07",
+        "deviceName": "Bình nóng lạnh",
+        "description": "Đèn báo sáng nhưng nước không nóng",
+        "reportDate": "08/11/2026"
+      }
+    ]
+  },
+  {
+    "roomId": "V201",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 2,
+    "maxStudents": 2,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "FULL",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "V202",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 2,
+    "maxStudents": 2,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "OCCUPIED",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "V203",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 2,
+    "maxStudents": 2,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "EMPTY",
+    "brokenDevices": []
+  },
+  {
+    "roomId": "V204",
+    "roomType": "VIP",
     "building": "Khu VIP",
     "floor": 2,
     "maxStudents": 4,
-    "roomId": "P201",
-    "roomType": "VIP",
+    "basePrice": 1200000.0,
     "serviceFee": 250000.0,
-    "status": "OCCUPIED"
+    "status": "OCCUPIED",
+    "brokenDevices": [
+      {
+        "deviceId": "TB08",
+        "deviceName": "Điều hòa Panasonic",
+        "description": "Chảy nước ở mặt lạnh xuống bàn",
+        "reportDate": "04/11/2026"
+      }
+    ]
+  },
+  {
+    "roomId": "V205",
+    "roomType": "VIP",
+    "building": "Khu VIP",
+    "floor": 2,
+    "maxStudents": 4,
+    "basePrice": 1200000.0,
+    "serviceFee": 250000.0,
+    "status": "MAINTENANCE",
+    "brokenDevices": [
+      {
+        "deviceId": "TB09",
+        "deviceName": "Cửa sổ kính trượt",
+        "description": "Kẹt ray nhôm không kéo đóng kín được",
+        "reportDate": "07/11/2026"
+      }
+    ]
   }
 ]

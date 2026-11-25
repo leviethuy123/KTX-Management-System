@@ -2,7 +2,6 @@
 #define MANAGER_H
 
 #include "Common.h"
-#include <vector>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -17,7 +16,7 @@
 template <typename T>
 class Manager {
 protected:
-    std::vector<T*> list;        // Khớp XML: # list: vector<T*>
+    Vector<T*> list;        // Khớp XML: # list: vector<T*>
     std::string dataFilePath;    // Đường dẫn file JSON
 
 public:
@@ -92,7 +91,7 @@ public:
     }
 
     // Lấy toàn bộ danh sách (khớp XML: + getAll(): const vector<T*>& {const})
-    const std::vector<T*>& getAll() const {
+    const Vector<T*>& getAll() const {
         return list;
     }
 
